@@ -16,8 +16,8 @@
             --text-muted: #9ca3af;
             --border-color: #242735;
             --purple-project: #a855f7;
-            --green-io: #10b981;
-            --green-io-hover: #059669;
+            --green-download: #10b981;
+            --green-hover: #059669;
         }
 
         * {
@@ -91,6 +91,12 @@
             gap: 5px;
         }
 
+        .title-zone {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
         .breadcrumbs {
             font-size: 0.9rem;
             color: var(--text-muted);
@@ -116,6 +122,7 @@
             display: flex;
             gap: 0.75rem;
             flex-wrap: wrap;
+            align-items: center;
         }
 
         /* Кнопки и инпуты */
@@ -142,15 +149,6 @@
         }
         .btn-project:hover {
             background-color: rgba(168, 85, 247, 0.1);
-        }
-
-        .btn-file {
-            background-color: transparent;
-            border: 1px solid var(--green-io);
-            color: #a7f3d0;
-        }
-        .btn-file:hover {
-            background-color: rgba(16, 185, 129, 0.1);
         }
 
         .input-field {
@@ -232,6 +230,11 @@
             margin-bottom: 0.5rem;
         }
 
+        .btn-group {
+            display: flex;
+            gap: 6px;
+        }
+
         .action-btn {
             border: none;
             width: 28px;
@@ -251,6 +254,38 @@
         }
         .edit-btn:hover { background-color: var(--yellow-hover); transform: scale(1.05); }
         .edit-btn svg { width: 14px; height: 14px; fill: #000; }
+
+        .download-btn {
+            background-color: #242735;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+        }
+        .download-btn:hover { 
+            background-color: var(--green-download); 
+            border-color: var(--green-download);
+            transform: scale(1.05); 
+        }
+        .download-btn svg { width: 14px; height: 14px; fill: currentColor; }
+
+        .upload-icon-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .upload-icon-btn:hover {
+            color: #3b82f6;
+            border-color: #3b82f6;
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+        .upload-icon-btn svg { width: 18px; height: 18px; fill: currentColor; }
 
         .card-desc {
             font-size: 0.95rem;
@@ -362,13 +397,15 @@
         <header>
             <div class="header-left">
                 <div class="breadcrumbs" id="breadcrumbs" onclick="viewAllProjects()"><span>All Projects</span></div>
-                <h1 id="page-title">Prompt<span>Hub</span></h1>
+                <div class="title-zone">
+                    <h1 id="page-title">Prompt<span>Hub</span></h1>
+                    <button class="upload-icon-btn" onclick="triggerImport()" title="Загрузить резервную копию базы данных (.json)">
+                        <svg viewBox="0 0 24 24"><path d="M4 20h16v-2H4v2zm8-16L5.33 11h4V16h5.34v-5h4L12 4z"/></svg>
+                    </button>
+                    <input type="file" id="import-file-input" style="display:none;" accept=".json" onchange="importFromFile(event)">
+                </div>
             </div>
             <div class="header-actions">
-                <button class="btn btn-file" onclick="exportToFile()" title="Скачать базу данных в файл на ПК">Скачать файл</button>
-                <button class="btn btn-file" onclick="triggerImport()" title="Загрузить базу данных из файла">Загрузить файл</button>
-                <input type="file" id="import-file-input" style="display:none;" accept=".json" onchange="importFromFile(event)">
-                
                 <button class="btn btn-project" id="btn-add-project" onclick="openProjectModal()">+ Создать проект</button>
                 <button class="btn" id="btn-add-prompt" onclick="openPromptModal()">+ Добавить промпт</button>
             </div>
@@ -419,7 +456,7 @@
         </div>
     </div>
 
-    <div class="toast" id="toast">Промпт скопирован в буфер обмена!</div>
+    <div class="toast" id="toast">Скопировано!</div>
 
     <script>
         let projects = JSON.parse(localStorage.getItem('hub_projects')) || [];
@@ -458,26 +495,48 @@
         }
 
         // --- ЭКСПОРТ И ИМПОРТ ФАЙЛОВ НА КОМПЬЮТЕР ---
-        function exportToFile() {
-            const dataToSave = {
-                backup_date: getTodayDateString(),
-                projects: projects,
-                prompts: prompts
-            };
-            
-            const jsonString = JSON.stringify(dataToSave, null, 4);
+        function downloadData(filename, data) {
+            const jsonString = JSON.stringify(data, null, 4);
             const blob = new Blob([jsonString], { type: "application/json" });
             const url = URL.createObjectURL(blob);
             
             const link = document.createElement("a");
             link.href = url;
-            link.download = `promp_hub_backup_${getTodayDateString().replace(/\//g, '-')}.json`;
+            link.download = filename;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
             URL.revokeObjectURL(url);
+        }
+
+        function exportSingleProject(id, name, event) {
+            event.stopPropagation();
+            const projectObj = projects.find(p => p.id === id);
+            const relativePrompts = prompts.filter(p => p.projectId === id);
             
-            showToast("База данных скачана на ПК!");
+            const exportData = {
+                type: "single_project",
+                project: projectObj,
+                prompts: relativePrompts
+            };
+            
+            const safeName = name.replace(/[^a-z0-9а-яё_-]/g_i, '_');
+            downloadData(`project_${safeName}_backup.json`, exportData);
+            showToast("Проект и его промпты скачаны!");
+        }
+
+        function exportSinglePrompt(id, name, event) {
+            event.stopPropagation();
+            const promptObj = prompts.find(p => p.id === id);
+            
+            const exportData = {
+                type: "single_prompt",
+                prompt: promptObj
+            };
+            
+            const safeName = name.replace(/[^a-z0-9а-яё_-]/g_i, '_');
+            downloadData(`prompt_${safeName}_backup.json`, exportData);
+            showToast("Промпт успешно скачан на ПК!");
         }
 
         function triggerImport() {
@@ -491,30 +550,50 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
-                    const importedData = JSON.parse(e.target.result);
+                    const imported = JSON.parse(e.target.result);
                     
-                    if (!importedData.projects || !importedData.prompts) {
-                        alert("Ошибка: Неверный формат файла резервной копии!");
+                    // 1. Импорт полного бэкапа
+                    if (imported.projects && imported.prompts && !imported.type) {
+                        if (confirm("Импортировать полную базу данных? Текущие данные на сайте заменятся.")) {
+                            projects = imported.projects;
+                            prompts = imported.prompts;
+                        } else return;
+                    } 
+                    // 2. Импорт одного отдельного проекта
+                    else if (imported.type === "single_project" && imported.project) {
+                        if (projects.some(p => p.id === imported.project.id)) {
+                            if (!confirm("Проект с таким ID уже есть. Перезаписать его новыми данными?")) return;
+                            projects = projects.map(p => p.id === imported.project.id ? imported.project : p);
+                            prompts = prompts.filter(p => p.projectId !== imported.project.id);
+                        } else {
+                            projects.push(imported.project);
+                        }
+                        prompts = prompts.concat(imported.prompts);
+                    } 
+                    // 3. ...Импорт отдельного промпта
+                    else if (imported.type === "single_prompt" && imported.prompt) {
+                        if (prompts.some(p => p.id === imported.prompt.id)) {
+                            if (!confirm("Такой промпт уже существует. Обновить его?")) return;
+                            prompts = prompts.map(p => p.id === imported.prompt.id ? imported.prompt : p);
+                        } else {
+                            prompts.push(imported.prompt);
+                        }
+                    } else {
+                        alert("Неизвестный формат файла конфигурации!");
                         return;
                     }
 
-                    if (confirm("Вы уверены? Импорт полностью заменит текущие данные на сайте данными из файла.")) {
-                        projects = importedData.projects;
-                        prompts = importedData.prompts;
-                        
-                        localStorage.setItem('hub_projects', JSON.stringify(projects));
-                        localStorage.setItem('hub_prompts', JSON.stringify(prompts));
-                        
-                        currentProjectId = null;
-                        render();
-                        showToast("Данные успешно восстановлены из файла!", "#3b82f6");
-                    }
+                    localStorage.setItem('hub_projects', JSON.stringify(projects));
+                    localStorage.setItem('hub_prompts', JSON.stringify(prompts));
+                    render();
+                    showToast("Данные успешно импортированы!", "#3b82f6");
+
                 } catch (err) {
-                    alert("Ошибка чтения файла: Убедитесь, что это правильный JSON файл конфигурации.");
+                    alert("Ошибка чтения JSON файла.");
                 }
             };
             reader.readAsText(file);
-            event.target.value = ''; // Сброс инпута
+            event.target.value = '';
         }
 
         // --- УПРАВЛЕНИЕ ПРОЕКТАМИ ---
@@ -637,7 +716,7 @@
 
         function copyToClipboard(text) {
             navigator.clipboard.writeText(text).then(() => {
-                showToast("Промпт скопирован в буфер обмена!");
+                showToast("Скопировано в буфер обмена!");
             }).catch(err => { console.error('Ошибка копирования: ', err); });
         }
 
@@ -663,7 +742,7 @@
                 pageTitle.innerHTML = 'Наши <span>Проекты</span>';
                 
                 if (projects.length === 0) {
-                    grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); margin-top: 3rem;">У вас пока нет проектов. Создайте первый проект или загрузите резервную копию из файла!</div>`;
+                    grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); margin-top: 3rem;">У вас пока нет проектов. Создайте проект или загрузите резервную копию кнопкой загрузки (стрелочкой вверх) сверху!</div>`;
                     return;
                 }
 
@@ -678,9 +757,14 @@
                         <div>
                             <div class="card-header-zone">
                                 <div class="card-title">${escapeHtml(p.name)}</div>
-                                <button class="action-btn edit-btn" onclick="openProjectModal(${p.id}, event)" title="Редактировать проект">
-                                    <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-                                </button>
+                                <div class="btn-group">
+                                    <button class="action-btn download-btn" onclick="exportSingleProject(${p.id}, '${escapeHtml(p.name)}', event)" title="Скачать этот проект в файл">
+                                        <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
+                                    </button>
+                                    <button class="action-btn edit-btn" onclick="openProjectModal(${p.id}, event)" title="Редактировать проект">
+                                        <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                                    </button>
+                                </div>
                             </div>
                             <div class="card-date">Создан: ${escapeHtml(p.date || '—')}</div>
                             <div class="card-desc">${escapeHtml(p.desc || 'Нет описания')}</div>
@@ -715,9 +799,14 @@
                         <div>
                             <div class="card-header-zone">
                                 <div class="card-title">${escapeHtml(p.name)}</div>
-                                <button class="action-btn edit-btn" onclick="openPromptModal(${p.id}, event)" title="Редактировать промпт">
-                                    <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-                                </button>
+                                <div class="btn-group">
+                                    <button class="action-btn download-btn" onclick="exportSinglePrompt(${p.id}, '${escapeHtml(p.name)}', event)" title="Скачать этот промпт в файл">
+                                        <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
+                                    </button>
+                                    <button class="action-btn edit-btn" onclick="openPromptModal(${p.id}, event)" title="Редактировать промпт">
+                                        <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                                    </button>
+                                </div>
                             </div>
                             <div class="card-date">Изменен: ${escapeHtml(p.date || '—')}</div>
                             <div class="card-desc">${escapeHtml(p.desc || '')}</div>
