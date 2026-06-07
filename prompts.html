@@ -15,6 +15,7 @@
             --text-main: #f3f4f6;
             --text-muted: #9ca3af;
             --border-color: #242735;
+            --purple-project: #a855f7;
         }
 
         * {
@@ -75,9 +76,25 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 3rem;
+            margin-bottom: 2rem;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 1.5rem;
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .breadcrumbs {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+        .breadcrumbs span:hover {
+            color: var(--accent-color);
+            text-decoration: underline;
         }
 
         h1 {
@@ -88,6 +105,11 @@
 
         h1 span {
             color: var(--accent-color);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
         }
 
         /* Кнопки и инпуты */
@@ -106,8 +128,13 @@
             background-color: var(--accent-hover);
         }
 
-        .btn:active {
-            transform: scale(0.98);
+        .btn-project {
+            background-color: transparent;
+            border: 1px solid var(--purple-project);
+            color: #d8b4fe;
+        }
+        .btn-project:hover {
+            background-color: rgba(168, 85, 247, 0.1);
         }
 
         .input-field {
@@ -126,19 +153,23 @@
             border-color: var(--accent-color);
         }
 
+        select.input-field {
+            cursor: pointer;
+        }
+
         textarea.input-field {
-            min-height: 180px;
+            min-height: 150px;
             resize: vertical;
         }
 
-        /* Сетка карточек */
-        .prompts-grid {
+        /* Сетки карточек */
+        .grid-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 1.5rem;
         }
 
-        .prompt-card {
+        .card {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
@@ -149,12 +180,19 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            min-height: 160px;
+            min-height: 170px;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        .project-card:hover {
+            border-color: var(--purple-project);
         }
 
         .prompt-card:hover {
             border-color: var(--accent-color);
-            transform: translateY(-2px);
         }
 
         .card-header-zone {
@@ -162,20 +200,23 @@
             justify-content: space-between;
             align-items: flex-start;
             gap: 10px;
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.5rem;
         }
 
-        .prompt-title {
+        .card-title {
             font-size: 1.2rem;
             font-weight: 600;
             color: var(--text-main);
-            padding-right: 5px;
         }
 
-        /* Желтая кнопка редактирования */
-        .edit-btn {
-            background-color: var(--yellow-edit);
-            color: #000;
+        .card-date {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Кнопки действий на карточках */
+        .action-btn {
             border: none;
             width: 28px;
             height: 28px;
@@ -188,18 +229,14 @@
             transition: background 0.2s ease, transform 0.1s ease;
         }
 
-        .edit-btn:hover {
-            background-color: var(--yellow-hover);
-            transform: scale(1.05);
+        .edit-btn {
+            background-color: var(--yellow-edit);
+            color: #000;
         }
+        .edit-btn:hover { background-color: var(--yellow-hover); transform: scale(1.05); }
+        .edit-btn svg { width: 14px; height: 14px; fill: #000; }
 
-        .edit-btn svg {
-            width: 14px;
-            height: 14px;
-            fill: #000;
-        }
-
-        .prompt-desc {
+        .card-desc {
             font-size: 0.95rem;
             color: var(--text-muted);
             line-height: 1.4;
@@ -215,6 +252,15 @@
             margin-top: auto;
         }
 
+        .prompt-count-tag {
+            background-color: rgba(168, 85, 247, 0.15);
+            color: #d8b4fe;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 500;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+        }
+
         .delete-btn {
             background: none;
             border: none;
@@ -222,19 +268,16 @@
             cursor: pointer;
             font-size: 0.85rem;
         }
+        .delete-btn:hover { text-decoration: underline; }
 
-        .delete-btn:hover {
-            text-decoration: underline;
-        }
-
-        /* Модальное окно */
+        /* Модальные окна */
         .modal {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.75);
+            background-color: rgba(0, 0, 0, 0.85);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -269,10 +312,7 @@
             border: 1px solid var(--border-color);
             color: var(--text-muted);
         }
-
-        .btn-secondary:hover {
-            background-color: #1e2230;
-        }
+        .btn-secondary:hover { background-color: #1e2230; }
 
         /* Уведомление */
         .toast {
@@ -287,12 +327,9 @@
             transform: translateY(100px);
             opacity: 0;
             transition: transform 0.3s ease, opacity 0.3s ease;
+            z-index: 9999;
         }
-
-        .toast.show {
-            transform: translateY(0);
-            opacity: 1;
-        }
+        .toast.show { transform: translateY(0); opacity: 1; }
     </style>
 </head>
 <body>
@@ -307,25 +344,57 @@
 
     <div class="container" id="main-container">
         <header>
-            <h1>Prompt<span>Hub</span></h1>
-            <button class="btn" onclick="openCreateModal()">+ Добавить промпт</button>
+            <div class="header-left">
+                <div class="breadcrumbs" id="breadcrumbs" onclick="viewAllProjects()"><span>Все проекты</span></div>
+                <h1 id="page-title">Prompt<span>Hub</span></h1>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-project" id="btn-add-project" onclick="openProjectModal()">+ Создать проект</button>
+                <button class="btn" id="btn-add-prompt" onclick="openPromptModal()">+ Добавить промпт</button>
+            </div>
         </header>
 
         <main>
-            <div class="prompts-grid" id="prompts-list"></div>
+            <div class="grid-container" id="content-grid"></div>
         </main>
+    </div>
+
+    <div class="modal" id="project-modal">
+        <div class="modal-content">
+            <h3 id="project-modal-title" style="margin-bottom: 1.5rem;">Новый проект</h3>
+            <input type="hidden" id="edit-project-id">
+            
+            <label style="font-size:0.85rem; color:var(--text-muted);">Дата создания (дд/мм/гггг):</label>
+            <input type="text" id="project-date" class="input-field" placeholder="Например: 07/06/2026">
+            
+            <input type="text" id="project-name" class="input-field" placeholder="Название проекта (например: Ютуб Продвижение)">
+            <input type="text" id="project-description" class="input-field" placeholder="Описание проекта">
+            
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal('project-modal')">Отмена</button>
+                <button class="btn" style="background-color:var(--purple-project);" onclick="saveProject()">Сохранить проект</button>
+            </div>
+        </div>
     </div>
 
     <div class="modal" id="prompt-modal">
         <div class="modal-content">
-            <h3 id="modal-title" style="margin-bottom: 1.5rem;">Новый промпт</h3>
+            <h3 id="prompt-modal-title" style="margin-bottom: 1.5rem;">Новый промпт</h3>
             <input type="hidden" id="edit-prompt-id">
-            <input type="text" id="prompt-name" class="input-field" placeholder="Название промпта (например: Исправление лимитов бэкенда)">
+            
+            <label style="font-size:0.85rem; color:var(--text-muted);">Дата изменения (дд/мм/гггг):</label>
+            <input type="text" id="prompt-date" class="input-field" placeholder="Например: 07/06/2026">
+
+            <label style="font-size:0.85rem; color:var(--text-muted);">Привязать к проекту:</label>
+            <select id="prompt-project-select" class="input-field"></select>
+
+            <input type="text" id="prompt-name" class="input-field" placeholder="Название промпта">
             <input type="text" id="prompt-description" class="input-field" placeholder="Краткое описание (что делает/исправляет)">
-            <textarea id="prompt-text" class="input-field" placeholder="Вставьте сам текст промпта сюда..."></textarea>
+            <textarea id="prompt-text" class="input-field" placeholder="Вставьте текст промпта сюда..."></textarea>
+            
             <div class="modal-actions">
-                <button class="btn btn-secondary" onclick="toggleModal(false)">Отмена</button>
-                <button class="btn" onclick="savePrompt()">Сохранить</button>
+                <button class="btn btn-secondary" onclick="closeModal('prompt-modal')">Отмена</button>
+                <button class="btn" onclick="savePrompt()">Сохранить промпт</button>
             </div>
         </div>
     </div>
@@ -333,87 +402,155 @@
     <div class="toast" id="toast">Промпт скопирован в буфер обмена!</div>
 
     <script>
-        let prompts = JSON.parse(localStorage.getItem('saved_prompts')) || [];
+        // Базы данных в localStorage
+        let projects = JSON.parse(localStorage.getItem('hub_projects')) || [];
+        let prompts = JSON.parse(localStorage.getItem('hub_prompts')) || [];
+        
+        // Текущее состояние навигации (null - видим проекты, id - зашли в проект)
+        let currentProjectId = null;
+
+        // Вспомогательная функция получения сегодняшней даты в формате дд/мм/гггг
+        function getTodayDateString() {
+            const today = new Date();
+            const dd = String(today.getDate()).padStart(2, '0');
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const yyyy = today.getFullYear();
+            return `${dd}/${mm}/${yyyy}`;
+        }
 
         function checkPassword() {
             const pass = document.getElementById('password-input').value;
             if (pass === '2102isa') {
                 document.getElementById('auth-screen').style.display = 'none';
                 document.getElementById('main-container').style.display = 'block';
-                renderPrompts();
+                render();
             } else {
                 alert('Неверный пароль!');
             }
         }
 
-        function toggleModal(show) {
-            const modal = document.getElementById('prompt-modal');
-            if (show) {
-                modal.classList.add('active');
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // --- УПРАВЛЕНИЕ ПРОЕКТАМИ ---
+        function openProjectModal(id = null, event = null) {
+            if (event) event.stopPropagation();
+            
+            if (id) {
+                const p = projects.find(item => item.id === id);
+                if (!p) return;
+                document.getElementById('project-modal-title').innerText = 'Редактировать проект';
+                document.getElementById('edit-project-id').value = p.id;
+                document.getElementById('project-date').value = p.date || getTodayDateString();
+                document.getElementById('project-name').value = p.name;
+                document.getElementById('project-description').value = p.desc;
             } else {
-                modal.classList.remove('active');
-                clearInputs();
+                document.getElementById('project-modal-title').innerText = 'Новый проект';
+                document.getElementById('edit-project-id').value = '';
+                document.getElementById('project-date').value = getTodayDateString();
+                document.getElementById('project-name').value = '';
+                document.getElementById('project-description').value = '';
+            }
+            document.getElementById('project-modal').classList.add('active');
+        }
+
+        function saveProject() {
+            const id = document.getElementById('edit-project-id').value;
+            const date = document.getElementById('project-date').value.trim() || getTodayDateString();
+            const name = document.getElementById('project-name').value.trim();
+            const desc = document.getElementById('project-description').value.trim();
+
+            if (!name) { alert('Укажите название проекта!'); return; }
+
+            if (id) {
+                projects = projects.map(p => p.id === parseInt(id) ? { ...p, date, name, desc } : p);
+            } else {
+                projects.push({ id: Date.now(), date, name, desc });
+            }
+
+            localStorage.setItem('hub_projects', JSON.stringify(projects));
+            closeModal('project-modal');
+            render();
+        }
+
+        function deleteProject(id, event) {
+            event.stopPropagation();
+            const pCount = prompts.filter(p => p.projectId === id).length;
+            if (confirm(`Удалить этот проект? Все промпты внутри (${pCount} шт.) потеряют привязку.`)) {
+                projects = projects.filter(p => p.id !== id);
+                // Сбрасываем привязку у промптов
+                prompts = prompts.map(p => p.projectId === id ? { ...p, projectId: null } : p);
+                
+                localStorage.setItem('hub_projects', JSON.stringify(projects));
+                localStorage.setItem('hub_prompts', JSON.stringify(prompts));
+                
+                if (currentProjectId === id) currentProjectId = null;
+                render();
             }
         }
 
-        function clearInputs() {
-            document.getElementById('edit-prompt-id').value = '';
-            document.getElementById('prompt-name').value = '';
-            document.getElementById('prompt-description').value = '';
-            document.getElementById('prompt-text').value = '';
-        }
+        // --- УПРАВЛЕНИЕ ПРОМПТАМИ ---
+        function openPromptModal(id = null, event = null) {
+            if (event) event.stopPropagation();
 
-        function openCreateModal() {
-            document.getElementById('modal-title').innerText = 'Новый промпт';
-            clearInputs();
-            toggleModal(true);
-        }
+            // Заполняем выпадающий список проектов
+            const select = document.getElementById('prompt-project-select');
+            select.innerHTML = '<option value="">-- Без проекта --</option>';
+            projects.forEach(p => {
+                select.innerHTML += `<option value="${p.id}">${escapeHtml(p.name)}</option>`;
+            });
 
-        function openEditModal(id, event) {
-            event.stopPropagation(); // Останавливаем копирование при клике на карандаш
-            const promptToEdit = prompts.find(p => p.id === id);
-            if (!promptToEdit) return;
-
-            document.getElementById('modal-title').innerText = 'Редактировать промпт';
-            document.getElementById('edit-prompt-id').value = promptToEdit.id;
-            document.getElementById('prompt-name').value = promptToEdit.name;
-            document.getElementById('prompt-description').value = promptToEdit.desc;
-            document.getElementById('prompt-text').value = promptToEdit.text;
-
-            toggleModal(true);
+            if (id) {
+                const pr = prompts.find(item => item.id === id);
+                if (!pr) return;
+                document.getElementById('prompt-modal-title').innerText = 'Редактировать промпт';
+                document.getElementById('edit-prompt-id').value = pr.id;
+                document.getElementById('prompt-date').value = pr.date || getTodayDateString();
+                document.getElementById('prompt-project-select').value = pr.projectId || '';
+                document.getElementById('prompt-name').value = pr.name;
+                document.getElementById('prompt-description').value = pr.desc;
+                document.getElementById('prompt-text').value = pr.text;
+            } else {
+                document.getElementById('prompt-modal-title').innerText = 'Новый промпт';
+                document.getElementById('edit-prompt-id').value = '';
+                document.getElementById('prompt-date').value = getTodayDateString();
+                // Если мы находимся внутри какого-то проекта, автоматом выбираем его
+                document.getElementById('prompt-project-select').value = currentProjectId || '';
+                document.getElementById('prompt-name').value = '';
+                document.getElementById('prompt-description').value = '';
+                document.getElementById('prompt-text').value = '';
+            }
+            document.getElementById('prompt-modal').classList.add('active');
         }
 
         function savePrompt() {
-            const idTarget = document.getElementById('edit-prompt-id').value;
+            const id = document.getElementById('edit-prompt-id').value;
+            const date = document.getElementById('prompt-date').value.trim() || getTodayDateString();
+            const projectId = document.getElementById('prompt-project-select').value ? parseInt(document.getElementById('prompt-project-select').value) : null;
             const name = document.getElementById('prompt-name').value.trim();
             const desc = document.getElementById('prompt-description').value.trim();
             const text = document.getElementById('prompt-text').value.trim();
 
-            if (!name || !desc || !text) {
-                alert('Заполните все поля!');
-                return;
-            }
+            if (!name || !text) { alert('Заполните название и текст промпта!'); return; }
 
-            if (idTarget) {
-                // Редактирование существующего
-                prompts = prompts.map(p => p.id === parseInt(idTarget) ? { ...p, name, desc, text } : p);
+            if (id) {
+                prompts = prompts.map(p => p.id === parseInt(id) ? { ...p, date, projectId, name, desc, text } : p);
             } else {
-                // Создание нового
-                const newPrompt = { id: Date.now(), name, desc, text };
-                prompts.push(newPrompt);
+                prompts.push({ id: Date.now(), date, projectId, name, desc, text });
             }
 
-            localStorage.setItem('saved_prompts', JSON.stringify(prompts));
-            toggleModal(false);
-            renderPrompts();
+            localStorage.setItem('hub_prompts', JSON.stringify(prompts));
+            closeModal('prompt-modal');
+            render();
         }
 
         function deletePrompt(id, event) {
             event.stopPropagation();
             if (confirm('Удалить этот промпт?')) {
                 prompts = prompts.filter(p => p.id !== id);
-                localStorage.setItem('saved_prompts', JSON.stringify(prompts));
-                renderPrompts();
+                localStorage.setItem('hub_prompts', JSON.stringify(prompts));
+                render();
             }
         }
 
@@ -422,47 +559,106 @@
                 const toast = document.getElementById('toast');
                 toast.classList.add('show');
                 setTimeout(() => { toast.classList.remove('show'); }, 2000);
-            }).catch(err => {
-                console.error('Ошибка копирования: ', err);
-            });
+            }).catch(err => { console.error('Ошибка копирования: ', err); });
         }
 
-        function renderPrompts() {
-            const list = document.getElementById('prompts-list');
-            list.innerHTML = '';
+        // --- НАВИГАЦИЯ И РЕНДЕР ---
+        function viewProject(id) {
+            currentProjectId = id;
+            render();
+        }
 
-            if (prompts.length === 0) {
-                list.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); margin-top: 3rem;">У вас пока нет сохраненных промптов. Нажмите кнопку выше, чтобы добавить первый.</div>`;
-                return;
-            }
+        function viewAllProjects() {
+            currentProjectId = null;
+            render();
+        }
 
-            prompts.forEach(p => {
-                const card = document.createElement('div');
-                card.className = 'prompt-card';
-                card.onclick = () => copyToClipboard(p.text);
+        function render() {
+            const grid = document.getElementById('content-grid');
+            const breadcrumbs = document.getElementById('breadcrumbs');
+            const pageTitle = document.getElementById('page-title');
+            grid.innerHTML = '';
 
-                card.innerHTML = `
-                    <div>
-                        <div class="card-header-zone">
-                            <div class="prompt-title">${escapeHtml(p.name)}</div>
-                            <button class="edit-btn" onclick="openEditModal(${p.id}, event)" title="Редактировать">
-                                <svg viewBox="0 0 24 24">
-                                    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
-                                </svg>
-                            </button>
+            if (currentProjectId === null) {
+                // РЕНДЕР ГЛАВНОЙ СТРАНИЦЫ (СПИСОК ПРОЕКТОВ)
+                breadcrumbs.style.visibility = 'hidden';
+                pageTitle.innerHTML = 'Наши <span>Проекты</span>';
+                
+                if (projects.length === 0) {
+                    grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); margin-top: 3rem;">У вас пока нет проектов. Создайте первый проект кнопкой выше!</div>`;
+                    return;
+                }
+
+                projects.forEach(p => {
+                    // Считаем сколько промптов внутри проекта
+                    const countInside = prompts.filter(item => item.projectId === p.id).length;
+
+                    const card = document.createElement('div');
+                    card.className = 'card project-card';
+                    card.onclick = () => viewProject(p.id);
+
+                    card.innerHTML = `
+                        <div>
+                            <div class="card-header-zone">
+                                <div class="card-title">${escapeHtml(p.name)}</div>
+                                <button class="action-btn edit-btn" onclick="openProjectModal(${p.id}, event)" title="Редактировать проект">
+                                    <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                                </button>
+                            </div>
+                            <div class="card-date">Создан: ${escapeHtml(p.date || '—')}</div>
+                            <div class="card-desc">${escapeHtml(p.desc || 'Нет описания')}</div>
                         </div>
-                        <div class="prompt-desc">${escapeHtml(p.desc)}</div>
-                    </div>
-                    <div class="card-footer">
-                        <span>Нажмите для копирования</span>
-                        <button class="delete-btn" onclick="deletePrompt(${p.id}, event)">Удалить</button>
-                    </div>
-                `;
-                list.appendChild(card);
-            });
+                        <div class="card-footer">
+                            <span class="prompt-count-tag">Промптов внутри: ${countInside}</span>
+                            <button class="delete-btn" onclick="deleteProject(${p.id}, event)">Удалить проект</button>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+
+            } else {
+                // РЕНДЕР ВНУТРИ КОНКРЕТНОГО ПРОЕКТА (СПИСОК ПРОМПТОВ)
+                const activeProject = projects.find(p => p.id === currentProjectId);
+                breadcrumbs.style.visibility = 'visible';
+                breadcrumbs.innerHTML = `<span>← Вернуться к проектам</span>`;
+                pageTitle.innerHTML = activeProject ? `${escapeHtml(activeProject.name)}` : 'Промпты';
+
+                // Фильтруем промпты для текущего проекта
+                const filteredPrompts = prompts.filter(item => item.projectId === currentProjectId);
+
+                if (filteredPrompts.length === 0) {
+                    grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); margin-top: 3rem;">В этом проекте пока нет промптов. Нажмите «Добавить промпт» выше!</div>`;
+                    return;
+                }
+
+                filteredPrompts.forEach(p => {
+                    const card = document.createElement('div');
+                    card.className = 'card prompt-card';
+                    card.onclick = () => copyToClipboard(p.text);
+
+                    card.innerHTML = `
+                        <div>
+                            <div class="card-header-zone">
+                                <div class="card-title">${escapeHtml(p.name)}</div>
+                                <button class="action-btn edit-btn" onclick="openPromptModal(${p.id}, event)" title="Редактировать промпт">
+                                    <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                                </button>
+                            </div>
+                            <div class="card-date">Изменен: ${escapeHtml(p.date || '—')}</div>
+                            <div class="card-desc">${escapeHtml(p.desc || '')}</div>
+                        </div>
+                        <div class="card-footer">
+                            <span>Нажмите для копирования</span>
+                            <button class="delete-btn" onclick="deletePrompt(${p.id}, event)">Удалить</button>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            }
         }
 
         function escapeHtml(text) {
+            if (!text) return '';
             return text
                 .replace(/&/g, "&amp;")
                 .replace(/</g, "&lt;")
