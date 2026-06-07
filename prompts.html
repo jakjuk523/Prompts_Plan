@@ -78,7 +78,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 1.5rem;
             gap: 15px;
@@ -123,6 +123,26 @@
             gap: 0.75rem;
             flex-wrap: wrap;
             align-items: center;
+        }
+
+        /* Зона поиска */
+        .search-container {
+            width: 100%;
+            margin-bottom: 1.5rem;
+        }
+        .search-input {
+            width: 100%;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 0.75rem 1.25rem;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+        .search-input:focus {
+            border-color: var(--accent-color);
         }
 
         /* Кнопки и инпуты */
@@ -267,7 +287,7 @@
         }
         .download-btn svg { width: 14px; height: 14px; fill: currentColor; }
 
-        .upload-icon-btn {
+        .icon-control-btn {
             background: none;
             border: 1px solid var(--border-color);
             color: var(--text-muted);
@@ -280,12 +300,12 @@
             cursor: pointer;
             transition: all 0.2s ease;
         }
-        .upload-icon-btn:hover {
+        .icon-control-btn:hover {
             color: #3b82f6;
             border-color: #3b82f6;
             background-color: rgba(59, 130, 246, 0.1);
         }
-        .upload-icon-btn svg { width: 18px; height: 18px; fill: currentColor; }
+        .icon-control-btn svg { width: 18px; height: 18px; fill: currentColor; }
 
         .card-desc {
             font-size: 0.95rem;
@@ -399,10 +419,15 @@
                 <div class="breadcrumbs" id="breadcrumbs" onclick="viewAllProjects()"><span>All Projects</span></div>
                 <div class="title-zone">
                     <h1 id="page-title">Prompt<span>Hub</span></h1>
-                    <button class="upload-icon-btn" onclick="triggerImport()" title="Загрузить резервную копию базы данных (.json)">
+                    
+                    <button class="icon-control-btn" onclick="triggerImport()" title="Загрузить резервную копию (.json)">
                         <svg viewBox="0 0 24 24"><path d="M4 20h16v-2H4v2zm8-16L5.33 11h4V16h5.34v-5h4L12 4z"/></svg>
                     </button>
                     <input type="file" id="import-file-input" style="display:none;" accept=".json" onchange="importFromFile(event)">
+
+                    <button class="icon-control-btn" onclick="openPasswordModal()" title="Изменить пароль доступа">
+                        <svg viewBox="0 0 24 24"><path d="M12.65 10C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4H17v4h4v-4h2v-4H12.65zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>
+                    </button>
                 </div>
             </div>
             <div class="header-actions">
@@ -411,9 +436,24 @@
             </div>
         </header>
 
+        <div class="search-container">
+            <input type="text" id="search-bar" class="search-input" placeholder="Поиск по названию или описанию..." oninput="render()">
+        </div>
+
         <main>
             <div class="grid-container" id="content-grid"></div>
         </main>
+    </div>
+
+    <div class="modal" id="password-modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <h3 style="margin-bottom: 1.5rem;">Изменить пароль доступа</h3>
+            <input type="text" id="new-password-field" class="input-field" placeholder="Введите новый пароль">
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal('password-modal')">Отмена</button>
+                <button class="btn" onclick="saveNewPassword()">Обновить пароль</button>
+            </div>
+        </div>
     </div>
 
     <div class="modal" id="project-modal">
@@ -471,15 +511,33 @@
             return `${dd}/${mm}/${yyyy}`;
         }
 
+        // --- ЛОГИКА АВТОРactivity И ПАРОЛЯ ---
         function checkPassword() {
-            const pass = document.getElementById('password-input').value;
-            if (pass === '2102isa') {
+            const enteredPass = document.getElementById('password-input').value;
+            const savedPass = localStorage.getItem('hub_password') || '2102isa';
+            
+            if (enteredPass === savedPass) {
                 document.getElementById('auth-screen').style.display = 'none';
                 document.getElementById('main-container').style.display = 'block';
                 render();
             } else {
                 alert('Неверный пароль!');
             }
+        }
+
+        function openPasswordModal() {
+            const savedPass = localStorage.getItem('hub_password') || '2102isa';
+            document.getElementById('new-password-field').value = savedPass;
+            document.getElementById('password-modal').classList.add('active');
+        }
+
+        function saveNewPassword() {
+            const newPass = document.getElementById('new-password-field').value.trim();
+            if (!newPass) { alert("Пароль не может быть пустым!"); return; }
+            
+            localStorage.setItem('hub_password', newPass);
+            closeModal('password-modal');
+            showToast("Пароль успешно изменен!", "#3b82f6");
         }
 
         function closeModal(modalId) {
@@ -520,7 +578,7 @@
                 prompts: relativePrompts
             };
             
-            const safeName = name.replace(/[^a-z0-9а-яё_-]/g_i, '_');
+            const safeName = name.replace(/[^a-z0-9а-яё_-]/gi, '_');
             downloadData(`project_${safeName}_backup.json`, exportData);
             showToast("Проект и его промпты скачаны!");
         }
@@ -534,7 +592,7 @@
                 prompt: promptObj
             };
             
-            const safeName = name.replace(/[^a-z0-9а-яё_-]/g_i, '_');
+            const safeName = name.replace(/[^a-z0-9а-яё_-]/gi, '_');
             downloadData(`prompt_${safeName}_backup.json`, exportData);
             showToast("Промпт успешно скачан на ПК!");
         }
@@ -552,14 +610,12 @@
                 try {
                     const imported = JSON.parse(e.target.result);
                     
-                    // 1. Импорт полного бэкапа
                     if (imported.projects && imported.prompts && !imported.type) {
                         if (confirm("Импортировать полную базу данных? Текущие данные на сайте заменятся.")) {
                             projects = imported.projects;
                             prompts = imported.prompts;
                         } else return;
                     } 
-                    // 2. Импорт одного отдельного проекта
                     else if (imported.type === "single_project" && imported.project) {
                         if (projects.some(p => p.id === imported.project.id)) {
                             if (!confirm("Проект с таким ID уже есть. Перезаписать его новыми данными?")) return;
@@ -570,7 +626,6 @@
                         }
                         prompts = prompts.concat(imported.prompts);
                     } 
-                    // 3. ...Импорт отдельного промпта
                     else if (imported.type === "single_prompt" && imported.prompt) {
                         if (prompts.some(p => p.id === imported.prompt.id)) {
                             if (!confirm("Такой промпт уже существует. Обновить его?")) return;
@@ -723,11 +778,13 @@
         // --- НАВИГАЦИЯ И РЕНДЕР ---
         function viewProject(id) {
             currentProjectId = id;
+            document.getElementById('search-bar').value = ''; // Сброс поиска при входе
             render();
         }
 
         function viewAllProjects() {
             currentProjectId = null;
+            document.getElementById('search-bar').value = ''; // Сброс поиска при выходе
             render();
         }
 
@@ -735,18 +792,25 @@
             const grid = document.getElementById('content-grid');
             const breadcrumbs = document.getElementById('breadcrumbs');
             const pageTitle = document.getElementById('page-title');
+            const searchQuery = document.getElementById('search-bar').value.toLowerCase().trim();
             grid.innerHTML = '';
 
             if (currentProjectId === null) {
                 breadcrumbs.style.visibility = 'hidden';
                 pageTitle.innerHTML = 'Наши <span>Проекты</span>';
                 
-                if (projects.length === 0) {
-                    grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); margin-top: 3rem;">У вас пока нет проектов. Создайте проект или загрузите резервную копию кнопкой загрузки (стрелочкой вверх) сверху!</div>`;
+                // Фильтрация проектов по поиску
+                const filteredProjects = projects.filter(p => 
+                    p.name.toLowerCase().includes(searchQuery) || 
+                    (p.desc && p.desc.toLowerCase().includes(searchQuery))
+                );
+
+                if (filteredProjects.length === 0) {
+                    grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); margin-top: 3rem;">Проекты не найдены.</div>`;
                     return;
                 }
 
-                projects.forEach(p => {
+                filteredProjects.forEach(p => {
                     const countInside = prompts.filter(item => item.projectId === p.id).length;
 
                     const card = document.createElement('div');
@@ -783,10 +847,14 @@
                 breadcrumbs.innerHTML = `<span>← Вернуться к проектам</span>`;
                 pageTitle.innerHTML = activeProject ? `${escapeHtml(activeProject.name)}` : 'Промпты';
 
-                const filteredPrompts = prompts.filter(item => item.projectId === currentProjectId);
+                // Фильтрация промптов внутри проекта + строка поиска
+                const filteredPrompts = prompts.filter(item => 
+                    item.projectId === currentProjectId && 
+                    (item.name.toLowerCase().includes(searchQuery) || (item.desc && item.desc.toLowerCase().includes(searchQuery)))
+                );
 
                 if (filteredPrompts.length === 0) {
-                    grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); margin-top: 3rem;">В этом проекте пока нет промптов. Нажмите «Добавить промпт» выше!</div>`;
+                    grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); margin-top: 3rem;">Промпты не найдены.</div>`;
                     return;
                 }
 
