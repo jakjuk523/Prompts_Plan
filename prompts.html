@@ -16,6 +16,8 @@
             --text-muted: #9ca3af;
             --border-color: #242735;
             --purple-project: #a855f7;
+            --green-io: #10b981;
+            --green-io-hover: #059669;
         }
 
         * {
@@ -79,6 +81,8 @@
             margin-bottom: 2rem;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 1.5rem;
+            gap: 15px;
+            flex-wrap: wrap;
         }
 
         .header-left {
@@ -91,6 +95,7 @@
             font-size: 0.9rem;
             color: var(--text-muted);
             cursor: pointer;
+            user-select: none;
         }
         .breadcrumbs span:hover {
             color: var(--accent-color);
@@ -109,7 +114,8 @@
 
         .header-actions {
             display: flex;
-            gap: 1rem;
+            gap: 0.75rem;
+            flex-wrap: wrap;
         }
 
         /* Кнопки и инпуты */
@@ -117,11 +123,12 @@
             background-color: var(--accent-color);
             color: white;
             border: none;
-            padding: 0.75rem 1.5rem;
+            padding: 0.75rem 1.25rem;
             border-radius: 8px;
             font-weight: 500;
             cursor: pointer;
             transition: background 0.2s ease, transform 0.1s ease;
+            font-size: 0.95rem;
         }
 
         .btn:hover {
@@ -135,6 +142,15 @@
         }
         .btn-project:hover {
             background-color: rgba(168, 85, 247, 0.1);
+        }
+
+        .btn-file {
+            background-color: transparent;
+            border: 1px solid var(--green-io);
+            color: #a7f3d0;
+        }
+        .btn-file:hover {
+            background-color: rgba(16, 185, 129, 0.1);
         }
 
         .input-field {
@@ -167,6 +183,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 1.5rem;
+            width: 100%;
         }
 
         .card {
@@ -215,7 +232,6 @@
             margin-bottom: 0.5rem;
         }
 
-        /* Кнопки действий на карточках */
         .action-btn {
             border: none;
             width: 28px;
@@ -345,10 +361,14 @@
     <div class="container" id="main-container">
         <header>
             <div class="header-left">
-                <div class="breadcrumbs" id="breadcrumbs" onclick="viewAllProjects()"><span>Все проекты</span></div>
+                <div class="breadcrumbs" id="breadcrumbs" onclick="viewAllProjects()"><span>All Projects</span></div>
                 <h1 id="page-title">Prompt<span>Hub</span></h1>
             </div>
             <div class="header-actions">
+                <button class="btn btn-file" onclick="exportToFile()" title="Скачать базу данных в файл на ПК">Скачать файл</button>
+                <button class="btn btn-file" onclick="triggerImport()" title="Загрузить базу данных из файла">Загрузить файл</button>
+                <input type="file" id="import-file-input" style="display:none;" accept=".json" onchange="importFromFile(event)">
+                
                 <button class="btn btn-project" id="btn-add-project" onclick="openProjectModal()">+ Создать проект</button>
                 <button class="btn" id="btn-add-prompt" onclick="openPromptModal()">+ Добавить промпт</button>
             </div>
@@ -402,14 +422,10 @@
     <div class="toast" id="toast">Промпт скопирован в буфер обмена!</div>
 
     <script>
-        // Базы данных в localStorage
         let projects = JSON.parse(localStorage.getItem('hub_projects')) || [];
         let prompts = JSON.parse(localStorage.getItem('hub_prompts')) || [];
-        
-        // Текущее состояние навигации (null - видим проекты, id - зашли в проект)
         let currentProjectId = null;
 
-        // Вспомогательная функция получения сегодняшней даты в формате дд/мм/гггг
         function getTodayDateString() {
             const today = new Date();
             const dd = String(today.getDate()).padStart(2, '0');
@@ -431,6 +447,74 @@
 
         function closeModal(modalId) {
             document.getElementById(modalId).classList.remove('active');
+        }
+
+        function showToast(text, color = "#10b981") {
+            const toast = document.getElementById('toast');
+            toast.innerText = text;
+            toast.style.backgroundColor = color;
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 2000);
+        }
+
+        // --- ЭКСПОРТ И ИМПОРТ ФАЙЛОВ НА КОМПЬЮТЕР ---
+        function exportToFile() {
+            const dataToSave = {
+                backup_date: getTodayDateString(),
+                projects: projects,
+                prompts: prompts
+            };
+            
+            const jsonString = JSON.stringify(dataToSave, null, 4);
+            const blob = new Blob([jsonString], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `promp_hub_backup_${getTodayDateString().replace(/\//g, '-')}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            showToast("База данных скачана на ПК!");
+        }
+
+        function triggerImport() {
+            document.getElementById('import-file-input').click();
+        }
+
+        function importFromFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    
+                    if (!importedData.projects || !importedData.prompts) {
+                        alert("Ошибка: Неверный формат файла резервной копии!");
+                        return;
+                    }
+
+                    if (confirm("Вы уверены? Импорт полностью заменит текущие данные на сайте данными из файла.")) {
+                        projects = importedData.projects;
+                        prompts = importedData.prompts;
+                        
+                        localStorage.setItem('hub_projects', JSON.stringify(projects));
+                        localStorage.setItem('hub_prompts', JSON.stringify(prompts));
+                        
+                        currentProjectId = null;
+                        render();
+                        showToast("Данные успешно восстановлены из файла!", "#3b82f6");
+                    }
+                } catch (err) {
+                    alert("Ошибка чтения файла: Убедитесь, что это правильный JSON файл конфигурации.");
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = ''; // Сброс инпута
         }
 
         // --- УПРАВЛЕНИЕ ПРОЕКТАМИ ---
@@ -479,7 +563,6 @@
             const pCount = prompts.filter(p => p.projectId === id).length;
             if (confirm(`Удалить этот проект? Все промпты внутри (${pCount} шт.) потеряют привязку.`)) {
                 projects = projects.filter(p => p.id !== id);
-                // Сбрасываем привязку у промптов
                 prompts = prompts.map(p => p.projectId === id ? { ...p, projectId: null } : p);
                 
                 localStorage.setItem('hub_projects', JSON.stringify(projects));
@@ -494,7 +577,6 @@
         function openPromptModal(id = null, event = null) {
             if (event) event.stopPropagation();
 
-            // Заполняем выпадающий список проектов
             const select = document.getElementById('prompt-project-select');
             select.innerHTML = '<option value="">-- Без проекта --</option>';
             projects.forEach(p => {
@@ -515,7 +597,6 @@
                 document.getElementById('prompt-modal-title').innerText = 'Новый промпт';
                 document.getElementById('edit-prompt-id').value = '';
                 document.getElementById('prompt-date').value = getTodayDateString();
-                // Если мы находимся внутри какого-то проекта, автоматом выбираем его
                 document.getElementById('prompt-project-select').value = currentProjectId || '';
                 document.getElementById('prompt-name').value = '';
                 document.getElementById('prompt-description').value = '';
@@ -556,9 +637,7 @@
 
         function copyToClipboard(text) {
             navigator.clipboard.writeText(text).then(() => {
-                const toast = document.getElementById('toast');
-                toast.classList.add('show');
-                setTimeout(() => { toast.classList.remove('show'); }, 2000);
+                showToast("Промпт скопирован в буфер обмена!");
             }).catch(err => { console.error('Ошибка копирования: ', err); });
         }
 
@@ -580,17 +659,15 @@
             grid.innerHTML = '';
 
             if (currentProjectId === null) {
-                // РЕНДЕР ГЛАВНОЙ СТРАНИЦЫ (СПИСОК ПРОЕКТОВ)
                 breadcrumbs.style.visibility = 'hidden';
                 pageTitle.innerHTML = 'Наши <span>Проекты</span>';
                 
                 if (projects.length === 0) {
-                    grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); margin-top: 3rem;">У вас пока нет проектов. Создайте первый проект кнопкой выше!</div>`;
+                    grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); margin-top: 3rem;">У вас пока нет проектов. Создайте первый проект или загрузите резервную копию из файла!</div>`;
                     return;
                 }
 
                 projects.forEach(p => {
-                    // Считаем сколько промптов внутри проекта
                     const countInside = prompts.filter(item => item.projectId === p.id).length;
 
                     const card = document.createElement('div');
@@ -617,13 +694,11 @@
                 });
 
             } else {
-                // РЕНДЕР ВНУТРИ КОНКРЕТНОГО ПРОЕКТА (СПИСОК ПРОМПТОВ)
                 const activeProject = projects.find(p => p.id === currentProjectId);
                 breadcrumbs.style.visibility = 'visible';
                 breadcrumbs.innerHTML = `<span>← Вернуться к проектам</span>`;
                 pageTitle.innerHTML = activeProject ? `${escapeHtml(activeProject.name)}` : 'Промпты';
 
-                // Фильтруем промпты для текущего проекта
                 const filteredPrompts = prompts.filter(item => item.projectId === currentProjectId);
 
                 if (filteredPrompts.length === 0) {
