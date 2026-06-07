@@ -10,6 +10,8 @@
             --card-bg: #161820;
             --accent-color: #3b82f6;
             --accent-hover: #2563eb;
+            --yellow-edit: #eab308;
+            --yellow-hover: #ca8a04;
             --text-main: #f3f4f6;
             --text-muted: #9ca3af;
             --border-color: #242735;
@@ -66,7 +68,7 @@
         .container {
             width: 100%;
             max-width: 1000px;
-            display: none; /* Открывается после ввода пароля */
+            display: none;
         }
 
         header {
@@ -125,7 +127,7 @@
         }
 
         textarea.input-field {
-            min-height: 150px;
+            min-height: 180px;
             resize: vertical;
         }
 
@@ -147,6 +149,7 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            min-height: 160px;
         }
 
         .prompt-card:hover {
@@ -154,11 +157,46 @@
             transform: translateY(-2px);
         }
 
+        .card-header-zone {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 0.75rem;
+        }
+
         .prompt-title {
             font-size: 1.2rem;
             font-weight: 600;
-            margin-bottom: 0.75rem;
             color: var(--text-main);
+            padding-right: 5px;
+        }
+
+        /* Желтая кнопка редактирования */
+        .edit-btn {
+            background-color: var(--yellow-edit);
+            color: #000;
+            border: none;
+            width: 28px;
+            height: 28px;
+            min-width: 28px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.1s ease;
+        }
+
+        .edit-btn:hover {
+            background-color: var(--yellow-hover);
+            transform: scale(1.05);
+        }
+
+        .edit-btn svg {
+            width: 14px;
+            height: 14px;
+            fill: #000;
         }
 
         .prompt-desc {
@@ -174,6 +212,7 @@
             align-items: center;
             font-size: 0.8rem;
             color: var(--text-muted);
+            margin-top: auto;
         }
 
         .delete-btn {
@@ -188,7 +227,7 @@
             text-decoration: underline;
         }
 
-        /* Модальное окно создания */
+        /* Модальное окно */
         .modal {
             position: fixed;
             top: 0;
@@ -235,7 +274,7 @@
             background-color: #1e2230;
         }
 
-        /* Уведомление о копировании */
+        /* Уведомление */
         .toast {
             position: fixed;
             bottom: 2rem;
@@ -269,18 +308,18 @@
     <div class="container" id="main-container">
         <header>
             <h1>Prompt<span>Hub</span></h1>
-            <button class="btn" onclick="toggleModal(true)">+ Добавить промпт</button>
+            <button class="btn" onclick="openCreateModal()">+ Добавить промпт</button>
         </header>
 
         <main>
-            <div class="prompts-grid" id="prompts-list">
-                </div>
+            <div class="prompts-grid" id="prompts-list"></div>
         </main>
     </div>
 
     <div class="modal" id="prompt-modal">
         <div class="modal-content">
-            <h3 style="margin-bottom: 1.5rem;">Новый промпт</h3>
+            <h3 id="modal-title" style="margin-bottom: 1.5rem;">Новый промпт</h3>
+            <input type="hidden" id="edit-prompt-id">
             <input type="text" id="prompt-name" class="input-field" placeholder="Название промпта (например: Исправление лимитов бэкенда)">
             <input type="text" id="prompt-description" class="input-field" placeholder="Краткое описание (что делает/исправляет)">
             <textarea id="prompt-text" class="input-field" placeholder="Вставьте сам текст промпта сюда..."></textarea>
@@ -294,10 +333,8 @@
     <div class="toast" id="toast">Промпт скопирован в буфер обмена!</div>
 
     <script>
-        // Инициализация данных
         let prompts = JSON.parse(localStorage.getItem('saved_prompts')) || [];
 
-        // Проверка пароля
         function checkPassword() {
             const pass = document.getElementById('password-input').value;
             if (pass === '2102isa') {
@@ -309,7 +346,6 @@
             }
         }
 
-        // Открытие/закрытие модалки
         function toggleModal(show) {
             const modal = document.getElementById('prompt-modal');
             if (show) {
@@ -321,13 +357,34 @@
         }
 
         function clearInputs() {
+            document.getElementById('edit-prompt-id').value = '';
             document.getElementById('prompt-name').value = '';
             document.getElementById('prompt-description').value = '';
             document.getElementById('prompt-text').value = '';
         }
 
-        // Сохранение нового промпта
+        function openCreateModal() {
+            document.getElementById('modal-title').innerText = 'Новый промпт';
+            clearInputs();
+            toggleModal(true);
+        }
+
+        function openEditModal(id, event) {
+            event.stopPropagation(); // Останавливаем копирование при клике на карандаш
+            const promptToEdit = prompts.find(p => p.id === id);
+            if (!promptToEdit) return;
+
+            document.getElementById('modal-title').innerText = 'Редактировать промпт';
+            document.getElementById('edit-prompt-id').value = promptToEdit.id;
+            document.getElementById('prompt-name').value = promptToEdit.name;
+            document.getElementById('prompt-description').value = promptToEdit.desc;
+            document.getElementById('prompt-text').value = promptToEdit.text;
+
+            toggleModal(true);
+        }
+
         function savePrompt() {
+            const idTarget = document.getElementById('edit-prompt-id').value;
             const name = document.getElementById('prompt-name').value.trim();
             const desc = document.getElementById('prompt-description').value.trim();
             const text = document.getElementById('prompt-text').value.trim();
@@ -337,23 +394,22 @@
                 return;
             }
 
-            const newPrompt = {
-                id: Date.now(),
-                name: name,
-                desc: desc,
-                text: text
-            };
+            if (idTarget) {
+                // Редактирование существующего
+                prompts = prompts.map(p => p.id === parseInt(idTarget) ? { ...p, name, desc, text } : p);
+            } else {
+                // Создание нового
+                const newPrompt = { id: Date.now(), name, desc, text };
+                prompts.push(newPrompt);
+            }
 
-            prompts.push(newPrompt);
             localStorage.setItem('saved_prompts', JSON.stringify(prompts));
-            
             toggleModal(false);
             renderPrompts();
         }
 
-        // Удаление промпта
         function deletePrompt(id, event) {
-            event.stopPropagation(); // Чтобы не срабатывал клик по карте (копирование)
+            event.stopPropagation();
             if (confirm('Удалить этот промпт?')) {
                 prompts = prompts.filter(p => p.id !== id);
                 localStorage.setItem('saved_prompts', JSON.stringify(prompts));
@@ -361,20 +417,16 @@
             }
         }
 
-        // Копирование в буфер
         function copyToClipboard(text) {
             navigator.clipboard.writeText(text).then(() => {
                 const toast = document.getElementById('toast');
                 toast.classList.add('show');
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                }, 2000);
+                setTimeout(() => { toast.classList.remove('show'); }, 2000);
             }).catch(err => {
                 console.error('Ошибка копирования: ', err);
             });
         }
 
-        // Рендер карточек на экран
         function renderPrompts() {
             const list = document.getElementById('prompts-list');
             list.innerHTML = '';
@@ -391,7 +443,14 @@
 
                 card.innerHTML = `
                     <div>
-                        <div class="prompt-title">${escapeHtml(p.name)}</div>
+                        <div class="card-header-zone">
+                            <div class="prompt-title">${escapeHtml(p.name)}</div>
+                            <button class="edit-btn" onclick="openEditModal(${p.id}, event)" title="Редактировать">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                                </svg>
+                            </button>
+                        </div>
                         <div class="prompt-desc">${escapeHtml(p.desc)}</div>
                     </div>
                     <div class="card-footer">
@@ -403,7 +462,6 @@
             });
         }
 
-        // Безопасный вывод текста (защита от поломки верстки)
         function escapeHtml(text) {
             return text
                 .replace(/&/g, "&amp;")
