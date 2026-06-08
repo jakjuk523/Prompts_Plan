@@ -14,240 +14,288 @@
             --yellow-hover: #ca8a04;
             --text-main: #f3f4f6;
             --text-muted: #9ca3af;
-            --border-color: #242735;
-            --purple-project: #a855f7;
-            --green-download: #10b981;
-            --green-hover: #059669;
+            --border-color: #242838;
+            --danger-color: #ef4444;
+            --danger-hover: #dc2626;
+            --sidebar-width: 260px;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
         body {
             background-color: var(--bg-color);
             color: var(--text-main);
-            min-height: 100vh;
-            padding: 2rem;
             display: flex;
-            flex-direction: column;
-            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        /* Окно авторизации */
-        #auth-screen {
+        /* SIDEBAR */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--card-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
             position: fixed;
             top: 0;
+            bottom: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: var(--bg-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
+            z-index: 10;
         }
 
-        .auth-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            padding: 2.5rem;
-            border-radius: 12px;
-            text-align: center;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-        }
-
-        .auth-card h2 {
-            margin-bottom: 1.5rem;
-            font-size: 1.5rem;
-        }
-
-        /* Главный контейнер */
-        .container {
-            width: 100%;
-            max-width: 1000px;
-            display: none;
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
+        .sidebar-brand {
+            padding: 24px;
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
             border-bottom: 1px solid var(--border-color);
-            padding-bottom: 1.5rem;
-            gap: 15px;
-            flex-wrap: wrap;
+        }
+        .sidebar-brand span {
+            color: var(--accent-color);
         }
 
-        .header-left {
+        .sidebar-menu {
+            flex: 1;
+            padding: 16px 12px;
+            list-style: none;
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 8px;
         }
 
-        .title-zone {
+        .menu-item {
             display: flex;
             align-items: center;
             gap: 12px;
-        }
-
-        .breadcrumbs {
-            font-size: 0.9rem;
+            padding: 12px;
+            border-radius: 8px;
             color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
             cursor: pointer;
-            user-select: none;
-        }
-        .breadcrumbs span:hover {
-            color: var(--accent-color);
-            text-decoration: underline;
+            transition: all 0.2s ease;
         }
 
-        h1 {
-            font-size: 1.8rem;
-            font-weight: 600;
-            letter-spacing: -0.5px;
+        .menu-item:hover, .menu-item.active {
+            color: var(--text-main);
+            background-color: var(--border-color);
         }
-
-        h1 span {
+        .menu-item.active {
+            background-color: rgba(59, 130, 246, 0.1);
             color: var(--accent-color);
         }
 
-        .header-actions {
+        .menu-item svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 40px;
+            max-width: 1400px;
+            width: calc(100% - var(--sidebar-width));
+        }
+
+        /* HEADER AREA */
+        .header-area {
             display: flex;
-            gap: 0.75rem;
-            flex-wrap: wrap;
+            justify-content: space-between;
             align-items: center;
+            margin-bottom: 32px;
+            gap: 20px;
+            flex-wrap: wrap;
         }
 
-        /* Зона поиска */
-        .search-container {
-            width: 100%;
-            margin-bottom: 1.5rem;
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 800;
         }
+        .page-title span {
+            color: var(--accent-color);
+        }
+
+        .action-bar {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .search-container {
+            position: relative;
+            width: 280px;
+        }
+
         .search-input {
             width: 100%;
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
             color: var(--text-main);
-            padding: 0.75rem 1.25rem;
-            border-radius: 10px;
-            font-size: 0.95rem;
+            padding: 10px 16px 10px 40px;
+            border-radius: 8px;
+            font-size: 0.9rem;
             outline: none;
-            transition: border-color 0.2s ease;
+            transition: border-color 0.2s;
         }
+
         .search-input:focus {
             border-color: var(--accent-color);
         }
 
-        /* Кнопки и инпуты */
-        .btn {
-            background-color: var(--accent-color);
-            color: white;
-            border: none;
-            padding: 0.75rem 1.25rem;
-            border-radius: 8px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background 0.2s ease, transform 0.1s ease;
-            font-size: 0.95rem;
+        .search-container svg {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            fill: var(--text-muted);
         }
 
-        .btn:hover {
+        /* BUTTONS */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: #ffffff;
+        }
+        .btn-primary:hover {
             background-color: var(--accent-hover);
         }
 
-        .btn-project {
-            background-color: transparent;
-            border: 1px solid var(--purple-project);
-            color: #d8b4fe;
-        }
-        .btn-project:hover {
-            background-color: rgba(168, 85, 247, 0.1);
-        }
-
-        .input-field {
-            width: 100%;
-            background-color: #1e2230;
-            border: 1px solid var(--border-color);
+        .btn-secondary {
+            background-color: var(--card-bg);
             color: var(--text-main);
-            padding: 0.75rem 1rem;
-            border-radius: 8px;
-            margin-bottom: 1.25rem;
-            font-size: 1rem;
-            outline: none;
+            border: 1px solid var(--border-color);
+        }
+        .btn-secondary:hover {
+            background-color: var(--border-color);
         }
 
-        .input-field:focus {
-            border-color: var(--accent-color);
+        /* BREADCRUMBS */
+        .breadcrumbs {
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-
-        select.input-field {
+        .breadcrumbs span {
             cursor: pointer;
+            transition: color 0.2s;
+        }
+        .breadcrumbs span:hover {
+            color: var(--accent-color);
         }
 
-        textarea.input-field {
-            min-height: 150px;
-            resize: vertical;
-        }
-
-        /* Сетки карточек */
-        .grid-container {
+        /* GRID LOOP */
+        .content-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-            width: 100%;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
         }
 
+        /* CARDS */
         .card {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
-            padding: 1.5rem;
-            cursor: pointer;
-            position: relative;
-            transition: border-color 0.2s ease, transform 0.2s ease;
+            padding: 24px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            min-height: 170px;
+            min-height: 200px;
+            transition: transform 0.2s ease, border-color 0.2s ease;
         }
 
-        .card:hover {
-            transform: translateY(-2px);
+        .project-card {
+            cursor: pointer;
         }
-
         .project-card:hover {
-            border-color: var(--purple-project);
+            transform: translateY(-2px);
+            border-color: var(--accent-color);
         }
 
+        .prompt-card {
+            cursor: pointer;
+        }
         .prompt-card:hover {
-            border-color: var(--accent-color);
+            border-color: rgba(59, 130, 246, 0.4);
         }
 
         .card-header-zone {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
-            gap: 10px;
-            margin-bottom: 0.5rem;
+            align-items: start;
+            gap: 12px;
+            margin-bottom: 8px;
         }
 
         .card-title {
-            font-size: 1.2rem;
-            font-weight: 600;
+            font-size: 1.1rem;
+            font-weight: 700;
             color: var(--text-main);
+            word-break: break-word;
         }
 
         .card-date {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .card-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-clamp: 3;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            word-break: break-word;
+            margin-bottom: 16px;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border-color);
+            padding-top: 16px;
             font-size: 0.8rem;
             color: var(--text-muted);
-            margin-bottom: 0.5rem;
+        }
+
+        .prompt-count-tag {
+            background-color: var(--border-color);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            color: var(--text-main);
         }
 
         .btn-group {
@@ -256,637 +304,281 @@
         }
 
         .action-btn {
-            border: none;
-            width: 28px;
-            height: 28px;
-            min-width: 28px;
-            border-radius: 6px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            transition: background 0.2s ease, transform 0.1s ease;
-        }
-
-        .edit-btn {
-            background-color: var(--yellow-edit);
-            color: #000;
-        }
-        .edit-btn:hover { background-color: var(--yellow-hover); transform: scale(1.05); }
-        .edit-btn svg { width: 14px; height: 14px; fill: #000; }
-
-        .download-btn {
-            background-color: #242735;
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
-        }
-        .download-btn:hover { 
-            background-color: var(--green-download); 
-            border-color: var(--green-download);
-            transform: scale(1.05); 
-        }
-        .download-btn svg { width: 14px; height: 14px; fill: currentColor; }
-
-        .icon-control-btn {
             background: none;
-            border: 1px solid var(--border-color);
-            color: var(--text-muted);
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            border: none;
             cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .icon-control-btn:hover {
-            color: #3b82f6;
-            border-color: #3b82f6;
-            background-color: rgba(59, 130, 246, 0.1);
-        }
-        .icon-control-btn svg { width: 18px; height: 18px; fill: currentColor; }
-
-        .card-desc {
-            font-size: 0.95rem;
+            padding: 4px;
+            border-radius: 4px;
             color: var(--text-muted);
-            line-height: 1.4;
-            margin-bottom: 1.5rem;
-        }
-
-        .card-footer {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            margin-top: auto;
+            justify-content: center;
+            transition: background 0.2s, color 0.2s;
+        }
+        .action-btn:hover {
+            background-color: var(--border-color);
+            color: var(--text-main);
+        }
+        .action-btn svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
         }
 
-        .prompt-count-tag {
-            background-color: rgba(168, 85, 247, 0.15);
-            color: #d8b4fe;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-weight: 500;
-            border: 1px solid rgba(168, 85, 247, 0.3);
+        .edit-btn:hover {
+            color: var(--yellow-edit);
+        }
+        .download-btn:hover {
+            color: var(--accent-color);
         }
 
         .delete-btn {
             background: none;
             border: none;
-            color: #ef4444;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            font-weight: 600;
             cursor: pointer;
-            font-size: 0.85rem;
+            transition: color 0.2s;
         }
-        .delete-btn:hover { text-decoration: underline; }
+        .delete-btn:hover {
+            color: var(--danger-color);
+        }
 
-        /* Модальные окна */
-        .modal {
+        /* STATUS SELECTOR */
+        .status-select {
+            background: #1e2230;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            outline: none;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 600;
+            transition: border-color 0.2s;
+        }
+        .status-select:focus {
+            border-color: var(--accent-color);
+        }
+
+        /* MODAL WINDOWS */
+        .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.85);
-            display: flex;
-            justify-content: center;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: none;
             align-items: center;
-            z-index: 1000;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s ease;
+            justify-content: center;
+            z-index: 100;
+            padding: 20px;
         }
 
-        .modal.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .modal-content {
+        .modal {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
-            padding: 2rem;
-            border-radius: 12px;
+            border-radius: 16px;
             width: 100%;
-            max-width: 600px;
-        }
-
-        .modal-actions {
+            max-width: 540px;
+            padding: 32px;
             display: flex;
-            justify-content: flex-end;
-            gap: 1rem;
+            flex-direction: column;
+            gap: 20px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
         }
 
-        .btn-secondary {
-            background-color: transparent;
-            border: 1px solid var(--border-color);
+        .modal-title {
+            font-size: 1.35rem;
+            font-weight: 700;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-size: 0.85rem;
+            font-weight: 600;
             color: var(--text-muted);
         }
-        .btn-secondary:hover { background-color: #1e2230; }
 
-        /* Уведомление */
+        .form-control {
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+            width: 100%;
+            transition: border-color 0.2s;
+        }
+        .form-control:focus {
+            border-color: var(--accent-color);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        /* TOAST NOTIFICATION */
         .toast {
             position: fixed;
-            bottom: 2rem;
+            bottom: 30px;
+            right: 30px;
             background-color: #10b981;
             color: white;
-            padding: 0.75rem 1.5rem;
+            padding: 14px 24px;
             border-radius: 8px;
-            font-weight: 500;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            transform: translateY(100px);
-            opacity: 0;
-            transition: transform 0.3s ease, opacity 0.3s ease;
-            z-index: 9999;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            display: none;
+            z-index: 200;
+            animation: slideIn 0.3s ease;
         }
-        .toast.show { transform: translateY(0); opacity: 1; }
+
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* UTILS */
+        .hidden-file-input {
+            display: none;
+        }
     </style>
 </head>
 <body>
 
-    <div id="auth-screen">
-        <div class="auth-card">
-            <h2>Введите пароль доступа</h2>
-            <input type="password" id="password-input" class="input-field" placeholder="Пароль..." onkeydown="if(event.key==='Enter') checkPassword()">
-            <button class="btn" style="width: 100%" onclick="checkPassword()">Войти</button>
-        </div>
+    <div class="sidebar">
+        <div class="sidebar-brand">Prompt<span>Hub</span></div>
+        <ul class="sidebar-menu">
+            <li class="menu-item active" onclick="goHome()">
+                <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                Главный Хаб
+            </li>
+            <li class="menu-item" onclick="triggerImport()">
+                <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
+                Импорт бэкапа
+            </li>
+            <li class="menu-item" onclick="exportFullBackup()">
+                <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
+                Экспорт бэкапа
+            </li>
+        </ul>
     </div>
 
-    <div class="container" id="main-container">
-        <header>
-            <div class="header-left">
-                <div class="breadcrumbs" id="breadcrumbs" onclick="viewAllProjects()"><span>All Projects</span></div>
-                <div class="title-zone">
-                    <h1 id="page-title">Prompt<span>Hub</span></h1>
-                    
-                    <button class="icon-control-btn" onclick="triggerImport()" title="Загрузить резервную копию (.json)">
-                        <svg viewBox="0 0 24 24"><path d="M4 20h16v-2H4v2zm8-16L5.33 11h4V16h5.34v-5h4L12 4z"/></svg>
-                    </button>
-                    <input type="file" id="import-file-input" style="display:none;" accept=".json" onchange="importFromFile(event)">
+    <div class="main-content">
+        <div class="breadcrumbs" id="breadcrumbs" onclick="goHome()">
+            <span>All Projects</span>
+        </div>
 
-                    <button class="icon-control-btn" onclick="openPasswordModal()" title="Изменить пароль доступа">
-                        <svg viewBox="0 0 24 24"><path d="M12.65 10C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4H17v4h4v-4h2v-4H12.65zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>
-                    </button>
+        <div class="header-area">
+            <div class="page-title" id="page-title">Prompt<span>Hub</span></div>
+            <div class="action-bar">
+                <div class="search-container">
+                    <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                    <input type="text" id="search-bar" class="search-input" placeholder="Поиск по названию или описанию..." oninput="render()">
                 </div>
-            </div>
-            <div class="header-actions">
-                <button class="btn btn-project" id="btn-add-project" onclick="openProjectModal()">+ Создать проект</button>
-                <button class="btn" id="btn-add-prompt" onclick="openPromptModal()">+ Добавить промпт</button>
-            </div>
-        </header>
-
-        <div class="search-container">
-            <input type="text" id="search-bar" class="search-input" placeholder="Поиск по названию или описанию..." oninput="render()">
-        </div>
-
-        <main>
-            <div class="grid-container" id="content-grid"></div>
-        </main>
-    </div>
-
-    <div class="modal" id="password-modal">
-        <div class="modal-content" style="max-width: 400px;">
-            <h3 style="margin-bottom: 1.5rem;">Изменить пароль доступа</h3>
-            <input type="text" id="new-password-field" class="input-field" placeholder="Введите новый пароль">
-            <div class="modal-actions">
-                <button class="btn btn-secondary" onclick="closeModal('password-modal')">Отмена</button>
-                <button class="btn" onclick="saveNewPassword()">Обновить пароль</button>
+                <button class="btn btn-primary" id="btn-add-project" onclick="openNewProjectModal()">+ Новый проект</button>
+                <button class="btn btn-primary" id="btn-add-prompt" onclick="openNewPromptModal()" style="display: none;">+ Новый промпт</button>
             </div>
         </div>
+
+        <div class="content-grid" id="content-grid"></div>
     </div>
 
-    <div class="modal" id="project-modal">
-        <div class="modal-content">
-            <h3 id="project-modal-title" style="margin-bottom: 1.5rem;">Новый проект</h3>
+    <div class="modal-overlay" id="project-modal" onclick="closeModal('project-modal')">
+        <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-title" id="project-modal-title">Создать новый проект</div>
             <input type="hidden" id="edit-project-id">
-            
-            <label style="font-size:0.85rem; color:var(--text-muted);">Дата создания (дд/мм/гггг):</label>
-            <input type="text" id="project-date" class="input-field" placeholder="Например: 07/06/2026">
-            
-            <input type="text" id="project-name" class="input-field" placeholder="Название проекта (например: Ютуб Продвижение)">
-            <input type="text" id="project-description" class="input-field" placeholder="Описание проекта">
-            
-            <div class="modal-actions">
+            <div class="form-group">
+                <label>Дата проекта</label>
+                <input type="text" id="project-date" class="form-control" placeholder="Например: 08.06.2026">
+            </div>
+            <div class="form-group">
+                <label>Название проекта *</label>
+                <input type="text" id="project-name" class="form-control" placeholder="Введите имя папки/проекта">
+            </div>
+            <div class="form-group">
+                <label>Краткое описание</label>
+                <textarea id="project-description" class="form-control" placeholder="О чем данный проект?"></textarea>
+            </div>
+            <div class="modal-buttons">
                 <button class="btn btn-secondary" onclick="closeModal('project-modal')">Отмена</button>
-                <button class="btn" style="background-color:var(--purple-project);" onclick="saveProject()">Сохранить проект</button>
+                <button class="btn btn-primary" onclick="saveProject()">Сохранить</button>
             </div>
         </div>
     </div>
 
-    <div class="modal" id="prompt-modal">
-        <div class="modal-content">
-            <h3 id="prompt-modal-title" style="margin-bottom: 1.5rem;">Новый промпт</h3>
+    <div class="modal-overlay" id="prompt-modal" onclick="closeModal('prompt-modal')">
+        <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-title" id="prompt-modal-title">Создать новый промпт</div>
             <input type="hidden" id="edit-prompt-id">
-            
-            <label style="font-size:0.85rem; color:var(--text-muted);">Дата изменения (дд/мм/гггг):</label>
-            <input type="text" id="prompt-date" class="input-field" placeholder="Например: 07/06/2026">
-
-            <label style="font-size:0.85rem; color:var(--text-muted);">Привязать к проекту:</label>
-            <select id="prompt-project-select" class="input-field"></select>
-
-            <input type="text" id="prompt-name" class="input-field" placeholder="Название промпта">
-            <input type="text" id="prompt-description" class="input-field" placeholder="Краткое описание (что делает/исправляет)">
-            <textarea id="prompt-text" class="input-field" placeholder="Вставьте текст промпта сюда..."></textarea>
-            
-            <div class="modal-actions">
+            <div class="form-group">
+                <label>Дата создания/изменения</label>
+                <input type="text" id="prompt-date" class="form-control" placeholder="Например: 08.06.2026">
+            </div>
+            <div class="form-group">
+                <label>Привязать к проекту</label>
+                <select id="prompt-project-select" class="form-control"></select>
+            </div>
+            <div class="form-group">
+                <label>Название промпта *</label>
+                <input type="text" id="prompt-name" class="form-control" placeholder="Название шага или функции">
+            </div>
+            <div class="form-group">
+                <label>Описание / Замечания</label>
+                <textarea id="prompt-description" class="form-control" placeholder="Что делает данный промпт?"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Тело промпта (Инструкция) *</label>
+                <textarea id="prompt-text" class="form-control" style="min-height: 160px;" placeholder="Вставьте сюда системные промпты или инструкции для ИИ..."></textarea>
+            </div>
+            <div class="modal-buttons">
                 <button class="btn btn-secondary" onclick="closeModal('prompt-modal')">Отмена</button>
-                <button class="btn" onclick="savePrompt()">Сохранить промпт</button>
+                <button class="btn btn-primary" onclick="savePrompt()">Сохранить</button>
             </div>
         </div>
     </div>
 
-    <div class="toast" id="toast">Скопировано!</div>
+    <input type="file" id="import-file-input" class="hidden-file-input" accept=".json" onchange="importFromFile(event)">
+    <div class="toast" id="toast-notify">Текст скопирован!</div>
 
     <script>
         let projects = JSON.parse(localStorage.getItem('hub_projects')) || [];
         let prompts = JSON.parse(localStorage.getItem('hub_prompts')) || [];
         let currentProjectId = null;
 
+        // Инициализация при запуске
+        window.addEventListener('DOMContentLoaded', () => {
+            updateProjectSelect();
+            render();
+        });
+
         function getTodayDateString() {
             const today = new Date();
-            const dd = String(today.getDate()).padStart(2, '0');
-            const mm = String(today.getMonth() + 1).padStart(2, '0');
             const yyyy = today.getFullYear();
-            return `${dd}/${mm}/${yyyy}`;
-        }
-
-        // --- ЛОГИКА АВТОРactivity И ПАРОЛЯ ---
-        function checkPassword() {
-            const enteredPass = document.getElementById('password-input').value;
-            const savedPass = localStorage.getItem('hub_password') || '2102isa';
-            
-            if (enteredPass === savedPass) {
-                document.getElementById('auth-screen').style.display = 'none';
-                document.getElementById('main-container').style.display = 'block';
-                render();
-            } else {
-                alert('Неверный пароль!');
-            }
-        }
-
-        function openPasswordModal() {
-            const savedPass = localStorage.getItem('hub_password') || '2102isa';
-            document.getElementById('new-password-field').value = savedPass;
-            document.getElementById('password-modal').classList.add('active');
-        }
-
-        function saveNewPassword() {
-            const newPass = document.getElementById('new-password-field').value.trim();
-            if (!newPass) { alert("Пароль не может быть пустым!"); return; }
-            
-            localStorage.setItem('hub_password', newPass);
-            closeModal('password-modal');
-            showToast("Пароль успешно изменен!", "#3b82f6");
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.remove('active');
-        }
-
-        function showToast(text, color = "#10b981") {
-            const toast = document.getElementById('toast');
-            toast.innerText = text;
-            toast.style.backgroundColor = color;
-            toast.classList.add('show');
-            setTimeout(() => { toast.classList.remove('show'); }, 2000);
-        }
-
-        // --- ЭКСПОРТ И ИМПОРТ ФАЙЛОВ НА КОМПЬЮТЕР ---
-        function downloadData(filename, data) {
-            const jsonString = JSON.stringify(data, null, 4);
-            const blob = new Blob([jsonString], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-            
-            const link = document.createElement("a");
-            link.href = url;
-            link.download = filename;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-        }
-
-        function exportSingleProject(id, name, event) {
-            event.stopPropagation();
-            const projectObj = projects.find(p => p.id === id);
-            const relativePrompts = prompts.filter(p => p.projectId === id);
-            
-            const exportData = {
-                type: "single_project",
-                project: projectObj,
-                prompts: relativePrompts
-            };
-            
-            const safeName = name.replace(/[^a-z0-9а-яё_-]/gi, '_');
-            downloadData(`project_${safeName}_backup.json`, exportData);
-            showToast("Проект и его промпты скачаны!");
-        }
-
-        function exportSinglePrompt(id, name, event) {
-            event.stopPropagation();
-            const promptObj = prompts.find(p => p.id === id);
-            
-            const exportData = {
-                type: "single_prompt",
-                prompt: promptObj
-            };
-            
-            const safeName = name.replace(/[^a-z0-9а-яё_-]/gi, '_');
-            downloadData(`prompt_${safeName}_backup.json`, exportData);
-            showToast("Промпт успешно скачан на ПК!");
-        }
-
-        function triggerImport() {
-            document.getElementById('import-file-input').click();
-        }
-
-        function importFromFile(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const imported = JSON.parse(e.target.result);
-                    
-                    if (imported.projects && imported.prompts && !imported.type) {
-                        if (confirm("Импортировать полную базу данных? Текущие данные на сайте заменятся.")) {
-                            projects = imported.projects;
-                            prompts = imported.prompts;
-                        } else return;
-                    } 
-                    else if (imported.type === "single_project" && imported.project) {
-                        if (projects.some(p => p.id === imported.project.id)) {
-                            if (!confirm("Проект с таким ID уже есть. Перезаписать его новыми данными?")) return;
-                            projects = projects.map(p => p.id === imported.project.id ? imported.project : p);
-                            prompts = prompts.filter(p => p.projectId !== imported.project.id);
-                        } else {
-                            projects.push(imported.project);
-                        }
-                        prompts = prompts.concat(imported.prompts);
-                    } 
-                    else if (imported.type === "single_prompt" && imported.prompt) {
-                        if (prompts.some(p => p.id === imported.prompt.id)) {
-                            if (!confirm("Такой промпт уже существует. Обновить его?")) return;
-                            prompts = prompts.map(p => p.id === imported.prompt.id ? imported.prompt : p);
-                        } else {
-                            prompts.push(imported.prompt);
-                        }
-                    } else {
-                        alert("Неизвестный формат файла конфигурации!");
-                        return;
-                    }
-
-                    localStorage.setItem('hub_projects', JSON.stringify(projects));
-                    localStorage.setItem('hub_prompts', JSON.stringify(prompts));
-                    render();
-                    showToast("Данные успешно импортированы!", "#3b82f6");
-
-                } catch (err) {
-                    alert("Ошибка чтения JSON файла.");
-                }
-            };
-            reader.readAsText(file);
-            event.target.value = '';
-        }
-
-        // --- УПРАВЛЕНИЕ ПРОЕКТАМИ ---
-        function openProjectModal(id = null, event = null) {
-            if (event) event.stopPropagation();
-            
-            if (id) {
-                const p = projects.find(item => item.id === id);
-                if (!p) return;
-                document.getElementById('project-modal-title').innerText = 'Редактировать проект';
-                document.getElementById('edit-project-id').value = p.id;
-                document.getElementById('project-date').value = p.date || getTodayDateString();
-                document.getElementById('project-name').value = p.name;
-                document.getElementById('project-description').value = p.desc;
-            } else {
-                document.getElementById('project-modal-title').innerText = 'Новый проект';
-                document.getElementById('edit-project-id').value = '';
-                document.getElementById('project-date').value = getTodayDateString();
-                document.getElementById('project-name').value = '';
-                document.getElementById('project-description').value = '';
-            }
-            document.getElementById('project-modal').classList.add('active');
-        }
-
-        function saveProject() {
-            const id = document.getElementById('edit-project-id').value;
-            const date = document.getElementById('project-date').value.trim() || getTodayDateString();
-            const name = document.getElementById('project-name').value.trim();
-            const desc = document.getElementById('project-description').value.trim();
-
-            if (!name) { alert('Укажите название проекта!'); return; }
-
-            if (id) {
-                projects = projects.map(p => p.id === parseInt(id) ? { ...p, date, name, desc } : p);
-            } else {
-                projects.push({ id: Date.now(), date, name, desc });
-            }
-
-            localStorage.setItem('hub_projects', JSON.stringify(projects));
-            closeModal('project-modal');
-            render();
-        }
-
-        function deleteProject(id, event) {
-            event.stopPropagation();
-            const pCount = prompts.filter(p => p.projectId === id).length;
-            if (confirm(`Удалить этот проект? Все промпты внутри (${pCount} шт.) потеряют привязку.`)) {
-                projects = projects.filter(p => p.id !== id);
-                prompts = prompts.map(p => p.projectId === id ? { ...p, projectId: null } : p);
-                
-                localStorage.setItem('hub_projects', JSON.stringify(projects));
-                localStorage.setItem('hub_prompts', JSON.stringify(prompts));
-                
-                if (currentProjectId === id) currentProjectId = null;
-                render();
-            }
-        }
-
-        // --- УПРАВЛЕНИЕ ПРОМПТАМИ ---
-        function openPromptModal(id = null, event = null) {
-            if (event) event.stopPropagation();
-
-            const select = document.getElementById('prompt-project-select');
-            select.innerHTML = '<option value="">-- Без проекта --</option>';
-            projects.forEach(p => {
-                select.innerHTML += `<option value="${p.id}">${escapeHtml(p.name)}</option>`;
-            });
-
-            if (id) {
-                const pr = prompts.find(item => item.id === id);
-                if (!pr) return;
-                document.getElementById('prompt-modal-title').innerText = 'Редактировать промпт';
-                document.getElementById('edit-prompt-id').value = pr.id;
-                document.getElementById('prompt-date').value = pr.date || getTodayDateString();
-                document.getElementById('prompt-project-select').value = pr.projectId || '';
-                document.getElementById('prompt-name').value = pr.name;
-                document.getElementById('prompt-description').value = pr.desc;
-                document.getElementById('prompt-text').value = pr.text;
-            } else {
-                document.getElementById('prompt-modal-title').innerText = 'Новый промпт';
-                document.getElementById('edit-prompt-id').value = '';
-                document.getElementById('prompt-date').value = getTodayDateString();
-                document.getElementById('prompt-project-select').value = currentProjectId || '';
-                document.getElementById('prompt-name').value = '';
-                document.getElementById('prompt-description').value = '';
-                document.getElementById('prompt-text').value = '';
-            }
-            document.getElementById('prompt-modal').classList.add('active');
-        }
-
-        function savePrompt() {
-            const id = document.getElementById('edit-prompt-id').value;
-            const date = document.getElementById('prompt-date').value.trim() || getTodayDateString();
-            const projectId = document.getElementById('prompt-project-select').value ? parseInt(document.getElementById('prompt-project-select').value) : null;
-            const name = document.getElementById('prompt-name').value.trim();
-            const desc = document.getElementById('prompt-description').value.trim();
-            const text = document.getElementById('prompt-text').value.trim();
-
-            if (!name || !text) { alert('Заполните название и текст промпта!'); return; }
-
-            if (id) {
-                prompts = prompts.map(p => p.id === parseInt(id) ? { ...p, date, projectId, name, desc, text } : p);
-            } else {
-                prompts.push({ id: Date.now(), date, projectId, name, desc, text });
-            }
-
-            localStorage.setItem('hub_prompts', JSON.stringify(prompts));
-            closeModal('prompt-modal');
-            render();
-        }
-
-        function deletePrompt(id, event) {
-            event.stopPropagation();
-            if (confirm('Удалить этот промпт?')) {
-                prompts = prompts.filter(p => p.id !== id);
-                localStorage.setItem('hub_prompts', JSON.stringify(prompts));
-                render();
-            }
-        }
-
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                showToast("Скопировано в буфер обмена!");
-            }).catch(err => { console.error('Ошибка копирования: ', err); });
-        }
-
-        // --- НАВИГАЦИЯ И РЕНДЕР ---
-        function viewProject(id) {
-            currentProjectId = id;
-            document.getElementById('search-bar').value = ''; // Сброс поиска при входе
-            render();
-        }
-
-        function viewAllProjects() {
-            currentProjectId = null;
-            document.getElementById('search-bar').value = ''; // Сброс поиска при выходе
-            render();
-        }
-
-        function render() {
-            const grid = document.getElementById('content-grid');
-            const breadcrumbs = document.getElementById('breadcrumbs');
-            const pageTitle = document.getElementById('page-title');
-            const searchQuery = document.getElementById('search-bar').value.toLowerCase().trim();
-            grid.innerHTML = '';
-
-            if (currentProjectId === null) {
-                breadcrumbs.style.visibility = 'hidden';
-                pageTitle.innerHTML = 'Наши <span>Проекты</span>';
-                
-                // Фильтрация проектов по поиску
-                const filteredProjects = projects.filter(p => 
-                    p.name.toLowerCase().includes(searchQuery) || 
-                    (p.desc && p.desc.toLowerCase().includes(searchQuery))
-                );
-
-                if (filteredProjects.length === 0) {
-                    grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); margin-top: 3rem;">Проекты не найдены.</div>`;
-                    return;
-                }
-
-                filteredProjects.forEach(p => {
-                    const countInside = prompts.filter(item => item.projectId === p.id).length;
-
-                    const card = document.createElement('div');
-                    card.className = 'card project-card';
-                    card.onclick = () => viewProject(p.id);
-
-                    card.innerHTML = `
-                        <div>
-                            <div class="card-header-zone">
-                                <div class="card-title">${escapeHtml(p.name)}</div>
-                                <div class="btn-group">
-                                    <button class="action-btn download-btn" onclick="exportSingleProject(${p.id}, '${escapeHtml(p.name)}', event)" title="Скачать этот проект в файл">
-                                        <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
-                                    </button>
-                                    <button class="action-btn edit-btn" onclick="openProjectModal(${p.id}, event)" title="Редактировать проект">
-                                        <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="card-date">Создан: ${escapeHtml(p.date || '—')}</div>
-                            <div class="card-desc">${escapeHtml(p.desc || 'Нет описания')}</div>
-                        </div>
-                        <div class="card-footer">
-                            <span class="prompt-count-tag">Промптов внутри: ${countInside}</span>
-                            <button class="delete-btn" onclick="deleteProject(${p.id}, event)">Удалить проект</button>
-                        </div>
-                    `;
-                    grid.appendChild(card);
-                });
-
-            } else {
-                const activeProject = projects.find(p => p.id === currentProjectId);
-                breadcrumbs.style.visibility = 'visible';
-                breadcrumbs.innerHTML = `<span>← Вернуться к проектам</span>`;
-                pageTitle.innerHTML = activeProject ? `${escapeHtml(activeProject.name)}` : 'Промпты';
-
-                // Фильтрация промптов внутри проекта + строка поиска
-                const filteredPrompts = prompts.filter(item => 
-                    item.projectId === currentProjectId && 
-                    (item.name.toLowerCase().includes(searchQuery) || (item.desc && item.desc.toLowerCase().includes(searchQuery)))
-                );
-
-                if (filteredPrompts.length === 0) {
-                    grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); margin-top: 3rem;">Промпты не найдены.</div>`;
-                    return;
-                }
-
-                filteredPrompts.forEach(p => {
-                    const card = document.createElement('div');
-                    card.className = 'card prompt-card';
-                    card.onclick = () => copyToClipboard(p.text);
-
-                    card.innerHTML = `
-                        <div>
-                            <div class="card-header-zone">
-                                <div class="card-title">${escapeHtml(p.name)}</div>
-                                <div class="btn-group">
-                                    <button class="action-btn download-btn" onclick="exportSinglePrompt(${p.id}, '${escapeHtml(p.name)}', event)" title="Скачать этот промпт в файл">
-                                        <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
-                                    </button>
-                                    <button class="action-btn edit-btn" onclick="openPromptModal(${p.id}, event)" title="Редактировать промпт">
-                                        <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="card-date">Изменен: ${escapeHtml(p.date || '—')}</div>
-                            <div class="card-desc">${escapeHtml(p.desc || '')}</div>
-                        </div>
-                        <div class="card-footer">
-                            <span>Нажмите для копирования</span>
-                            <button class="delete-btn" onclick="deletePrompt(${p.id}, event)">Удалить</button>
-                        </div>
-                    `;
-                    grid.appendChild(card);
-                });
-            }
+            let mm = today.getMonth() + 1;
+            let dd = today.getDate();
+            if (dd < 10) dd = '0' + dd;
+            if (mm < 10) mm = '0' + mm;
+            return dd + '.' + mm + '.' + yyyy;
         }
 
         function escapeHtml(text) {
@@ -897,6 +589,485 @@
                 .replace(/>/g, "&gt;")
                 .replace(/"/g, "&quot;")
                 .replace(/'/g, "&#039;");
+        }
+
+        function showToast(message, bgColor = "#10b981") {
+            const toast = document.getElementById('toast-notify');
+            toast.innerText = message;
+            toast.style.backgroundColor = bgColor;
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 2500);
+        }
+
+        function copyText(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast("Промпт успешно скопирован в буфер!");
+            }).catch(() => {
+                showToast("Ошибка при копировании", "#ef4444");
+            });
+        }
+
+        function openModal(id) {
+            document.getElementById(id).style.display = 'flex';
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        function goHome() {
+            currentProjectId = null;
+            document.getElementById('search-bar').value = '';
+            render();
+        }
+
+        function selectProject(id) {
+            currentProjectId = id;
+            document.getElementById('search-bar').value = '';
+            render();
+        }
+
+        /* КАТЕГОРИЯ: БЕЗ ПРОЕКТА & СЕЛЕКТОР */
+        function updateProjectSelect() {
+            // Пункт 4: Проверяем и создаем проект "Без проекта", если его нет в массиве
+            let noProjectExists = projects.some(p => p.id === "no_project_id");
+            if (!noProjectExists) {
+                projects.unshift({
+                    id: "no_project_id",
+                    name: "Без проекта",
+                    desc: "Сюда попадают промпты без выбранного проекта",
+                    date: getTodayDateString()
+                });
+                localStorage.setItem('hub_projects', JSON.stringify(projects));
+            }
+
+            const select = document.getElementById('prompt-project-select');
+            select.innerHTML = '<option value="--НЕ ВЫБРАН—">--НЕ ВЫБРАН—</option>';
+            projects.forEach(p => {
+                select.innerHTML += `<option value="${p.id}">${escapeHtml(p.name)}</option>`;
+            });
+        }
+
+        /* ОСНОВНОЙ РЕНДЕРИНГ С НУМЕРАЦИЕЙ И СТАТУСАМИ */
+        function render() {
+            const grid = document.getElementById('content-grid');
+            const search = document.getElementById('search-bar').value.toLowerCase();
+            grid.innerHTML = '';
+
+            if (currentProjectId === null) {
+                // ЭКРАН ПРОЕКТОВ
+                document.getElementById('breadcrumbs').innerHTML = '<span>All Projects</span>';
+                document.getElementById('btn-add-prompt').style.display = 'none';
+                document.getElementById('btn-add-project').style.display = 'block';
+                document.getElementById('page-title').innerHTML = 'Prompt<span>Hub</span>';
+
+                const filteredProjects = projects.filter(p => 
+                    (p.name || '').toLowerCase().includes(search) || 
+                    (p.desc || '').toLowerCase().includes(search)
+                );
+
+                filteredProjects.forEach(p => {
+                    const count = prompts.filter(pr => pr.projectId === p.id).length;
+                    const card = document.createElement('div');
+                    card.className = 'card project-card';
+                    card.onclick = () => selectProject(p.id);
+                    card.innerHTML = `
+                        <div>
+                            <div class="card-header-zone">
+                                <div class="card-title">${escapeHtml(p.name)}</div>
+                                <div class="btn-group">
+                                    <button class="action-btn edit-btn" onclick="openEditProject('${p.id}', event)" title="Редактировать">
+                                        <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                                    </button>
+                                    <button class="action-btn download-btn" onclick="exportSingleProject('${p.id}', '${escapeHtml(p.name)}', event)" title="Скачать JSON проекта">
+                                        <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-date">Создан: ${escapeHtml(p.date || '—')}</div>
+                            <div class="card-desc">${escapeHtml(p.desc || '')}</div>
+                        </div>
+                        <div class="card-footer">
+                            <span class="prompt-count-tag">Промптов: ${count}</span>
+                            ${p.id !== 'no_project_id' ? `<button class="delete-btn" onclick="deleteProject('${p.id}', event)">Удалить</button>` : ''}
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            } else {
+                // ЭКРАН ПРОМПТОВ ВНУТРИ ПРОЕКТА
+                const activeProj = projects.find(p => p.id === currentProjectId);
+                const projName = activeProj ? activeProj.name : "Без проекта";
+
+                document.getElementById('breadcrumbs').innerHTML = '<span>&larr; Назад к проектам</span>';
+                document.getElementById('btn-add-prompt').style.display = 'block';
+                document.getElementById('btn-add-project').style.display = 'none';
+                document.getElementById('page-title').innerHTML = `Project: <span>${escapeHtml(projName)}</span>`;
+
+                const relativePrompts = prompts.filter(p => p.projectId === currentProjectId);
+                const filteredPrompts = relativePrompts.filter(p => 
+                    (p.name || '').toLowerCase().includes(search) || 
+                    (p.desc || '').toLowerCase().includes(search) ||
+                    (p.text || '').toLowerCase().includes(search)
+                );
+
+                // Пункт 1: Отрисовка с динамическим порядковым номером (index + 1)
+                filteredPrompts.forEach((p, index) => {
+                    const cardNumber = index + 1;
+                    const card = document.createElement('div');
+                    card.className = 'card prompt-card';
+                    card.onclick = () => copyText(p.text);
+                    
+                    // Пункт 2: Чтение текущего статуса
+                    const currentStatus = p.status || 'не отправлено';
+
+                    card.innerHTML = `
+                        <div>
+                            <div class="card-header-zone">
+                                <div class="card-title" style="display:flex; align-items:center; gap:8px;">
+                                    <span style="color: var(--accent-color); font-family: monospace; font-size:1.1rem; font-weight:800;">#${cardNumber}</span>
+                                    <span>${escapeHtml(p.name)}</span>
+                                </div>
+                                <div class="btn-group">
+                                    <button class="action-btn edit-btn" onclick="openEditPrompt('${p.id}', event)" title="Редактировать">
+                                        <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                                    </button>
+                                    <button class="action-btn download-btn" onclick="exportSinglePrompt('${p.id}', '${escapeHtml(p.name)}', event)" title="Скачать JSON промпта">
+                                        <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-date">Изменен: ${escapeHtml(p.date || '—')}</div>
+                            
+                            <div style="margin: 10px 0 14px 0;" onclick="event.stopPropagation()">
+                                <select class="status-select" onchange="updatePromptStatus('${p.id}', this.value)">
+                                    <option value="не отправлено" ${currentStatus === 'не отправлено' ? 'selected' : ''}>не отправлено</option>
+                                    <option value="В очереди" ${currentStatus === 'В очереди' ? 'selected' : ''}>В очереди</option>
+                                    <option value="Отправлено" ${currentStatus === 'Отправлено' ? 'selected' : ''}>Отправлено</option>
+                                </select>
+                            </div>
+
+                            <div class="card-desc">${escapeHtml(p.desc || '')}</div>
+                        </div>
+                        <div class="card-footer">
+                            <span>Нажмите для копирования</span>
+                            <button class="delete-btn" onclick="deletePrompt('${p.id}', event)">Удалить</button>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            }
+        }
+
+        /* ИЗМЕНЕНИЕ СТАТУСА КАРТЫ */
+        function updatePromptStatus(promptId, newStatus) {
+            const prompt = prompts.find(p => p.id === promptId);
+            if (prompt) {
+                prompt.status = newStatus;
+                localStorage.setItem('hub_prompts', JSON.stringify(prompts));
+                showToast(`Статус изменен на "${newStatus}"`, "#3b82f6");
+            }
+        }
+
+        /* УПРАВЛЕНИЕ ПРОЕКТАМИ */
+        function openNewProjectModal() {
+            document.getElementById('edit-project-id').value = '';
+            document.getElementById('project-modal-title').innerText = 'Создать новый проект';
+            document.getElementById('project-date').value = getTodayDateString();
+            document.getElementById('project-name').value = '';
+            document.getElementById('project-description').value = '';
+            openModal('project-modal');
+        }
+
+        function openEditProject(id, event) {
+            event.stopPropagation();
+            const p = projects.find(item => item.id === id);
+            if (!p) return;
+            document.getElementById('edit-project-id').value = p.id;
+            document.getElementById('project-modal-title').innerText = 'Редактировать проект';
+            document.getElementById('project-date').value = p.date || getTodayDateString();
+            document.getElementById('project-name').value = p.name || '';
+            document.getElementById('project-description').value = p.desc || '';
+            openModal('project-modal');
+        }
+
+        function saveProject() {
+            const id = document.getElementById('edit-project-id').value;
+            const date = document.getElementById('project-date').value.trim() || getTodayDateString();
+            const name = document.getElementById('project-name').value.trim();
+            const desc = document.getElementById('project-description').value.trim();
+
+            if (!name) {
+                alert("Название проекта обязательно к заполнению!");
+                return;
+            }
+
+            if (id) {
+                const p = projects.find(item => item.id === id);
+                if (p) {
+                    p.date = date;
+                    p.name = name;
+                    p.desc = desc;
+                }
+            } else {
+                projects.push({
+                    id: 'project_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+                    date: date,
+                    name: name,
+                    desc: desc
+                });
+            }
+
+            localStorage.setItem('hub_projects', JSON.stringify(projects));
+            closeModal('project-modal');
+            updateProjectSelect();
+            render();
+            showToast("Проект сохранен!");
+        }
+
+        function deleteProject(id, event) {
+            event.stopPropagation();
+            if (id === 'no_project_id') return;
+            if (confirm("Вы уверены, что хотите удалить этот проект? Все входящие в него промпты будут перемещены в категорию 'Без проекта'!")) {
+                prompts.forEach(p => {
+                    if (p.projectId === id) {
+                        p.projectId = 'no_project_id';
+                    }
+                });
+                projects = projects.filter(item => item.id !== id);
+                localStorage.setItem('hub_projects', JSON.stringify(projects));
+                localStorage.setItem('hub_prompts', JSON.stringify(prompts));
+                updateProjectSelect();
+                render();
+                showToast("Проект удален, промпты перенесены в 'Без проекта'", "#ef4444");
+            }
+        }
+
+        /* УПРАВЛЕНИЕ ПРОМПТАМИ */
+        function openNewPromptModal() {
+            document.getElementById('edit-prompt-id').value = '';
+            document.getElementById('prompt-modal-title').innerText = 'Создать новый промпт';
+            document.getElementById('prompt-date').value = getTodayDateString();
+            document.getElementById('prompt-project-select').value = currentProjectId || 'no_project_id';
+            document.getElementById('prompt-name').value = '';
+            document.getElementById('prompt-description').value = '';
+            document.getElementById('prompt-text').value = '';
+            openModal('prompt-modal');
+        }
+
+        function openEditPrompt(id, event) {
+            event.stopPropagation();
+            const p = prompts.find(item => item.id === id);
+            if (!p) return;
+            document.getElementById('edit-prompt-id').value = p.id;
+            document.getElementById('prompt-modal-title').innerText = 'Редактировать промпт';
+            document.getElementById('prompt-date').value = p.date || getTodayDateString();
+            document.getElementById('prompt-project-select').value = p.projectId || 'no_project_id';
+            document.getElementById('prompt-name').value = p.name || '';
+            document.getElementById('prompt-description').value = p.desc || '';
+            document.getElementById('prompt-text').value = p.text || '';
+            openModal('prompt-modal');
+        }
+
+        function savePrompt() {
+            const id = document.getElementById('edit-prompt-id').value;
+            const date = document.getElementById('prompt-date').value.trim() || getTodayDateString();
+            let projectId = document.getElementById('prompt-project-select').value;
+            const name = document.getElementById('prompt-name').value.trim();
+            const desc = document.getElementById('prompt-description').value.trim();
+            const text = document.getElementById('prompt-text').value.trim();
+
+            if (!name || !text) {
+                alert("Имя и текст промпта обязательны!");
+                return;
+            }
+
+            // Пункт 4: Если проект не выбран или сброшен, автоматически привязываем к "Без проекта"
+            if (projectId === '--НЕ ВЫБРАН—' || !projectId) {
+                projectId = "no_project_id";
+            }
+
+            if (id) {
+                const promptObj = prompts.find(p => p.id === id);
+                if (promptObj) {
+                    promptObj.date = date;
+                    promptObj.projectId = projectId;
+                    promptObj.name = name;
+                    promptObj.desc = desc;
+                    promptObj.text = text;
+                }
+            } else {
+                prompts.push({
+                    id: 'prompt_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+                    date: date,
+                    projectId: projectId,
+                    name: name,
+                    desc: desc,
+                    text: text,
+                    status: 'не отправлено' // Пункт 2: Статус по умолчанию для новых карт
+                });
+            }
+
+            localStorage.setItem('hub_prompts', JSON.stringify(prompts));
+            closeModal('prompt-modal');
+            render();
+            showToast("Промпт сохранен!");
+        }
+
+        function deletePrompt(id, event) {
+            event.stopPropagation();
+            if (confirm("Удалить этот промпт окончательно?")) {
+                prompts = prompts.filter(p => p.id !== id);
+                localStorage.setItem('hub_prompts', JSON.stringify(prompts));
+                render();
+                showToast("Промпт удален", "#ef4444");
+            }
+        }
+
+        /* БЭКАПЫ & ИМПОРТ / ЭКСПОРТ */
+        function downloadJSON(filename, data) {
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function exportFullBackup() {
+            const backup = {
+                projects: projects,
+                prompts: prompts
+            };
+            downloadJSON(`prompthub_full_backup_${getTodayDateString()}.json`, backup);
+            showToast("Полный бэкап скачан!");
+        }
+
+        function exportSingleProject(projId, projName, event) {
+            event.stopPropagation();
+            const projObj = projects.find(p => p.id === projId);
+            const relativePrompts = prompts.filter(p => p.projectId === projId);
+            
+            const backup = {
+                type: "single_project",
+                project: projObj,
+                prompts: relativePrompts
+            };
+            downloadJSON(`project_${projName.replace(/\s+/g, '_')}_backup.json`, backup);
+            showToast("Проект успешно экспортирован!");
+        }
+
+        function exportSinglePrompt(promptId, promptName, event) {
+            event.stopPropagation();
+            const pObj = prompts.find(p => p.id === promptId);
+            
+            const backup = {
+                type: "single_prompt",
+                prompt: pObj
+            };
+            downloadJSON(`prompt_${promptName.replace(/\s+/g, '_')}_backup.json`, backup);
+            showToast("Промпт успешно экспортирован!");
+        }
+
+        function triggerImport() {
+            document.getElementById('import-file-input').click();
+        }
+
+        /* ПУНКТ 3: ЛОГИКА ИМПОРТА БЕЗ ПЕРЕЗАПИСИ (ДУБЛИРОВАНИЕ) */
+        function importFromFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+
+                    // 1. Полный бэкап
+                    if (imported.projects && imported.prompts && !imported.type) {
+                        if (confirm("Импортировать данные? Все элементы будут добавлены рядом как дубликаты без перезаписи существующих.")) {
+                            const projectIdMap = {};
+
+                            imported.projects.forEach(p => {
+                                if (p.id === 'no_project_id') {
+                                    projectIdMap[p.id] = 'no_project_id';
+                                    return;
+                                }
+                                const newId = 'project_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+                                projectIdMap[p.id] = newId;
+                                projects.push({ ...p, id: newId });
+                            });
+
+                            imported.prompts.forEach(p => {
+                                prompts.push({
+                                    ...p,
+                                    id: 'prompt_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+                                    projectId: projectIdMap[p.projectId] || p.projectId || "no_project_id",
+                                    status: p.status || 'не отправлено'
+                                });
+                            });
+
+                            saveAndRefreshAll("Полный бэкап импортирован как дубликаты!");
+                        }
+                    } 
+                    // 2. Один проект
+                    else if (imported.type === "single_project" && imported.project && imported.prompts) {
+                        if (confirm(`Импортировать проект "${imported.project.name}" как копию?`)) {
+                            const newProjId = 'project_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+                            
+                            projects.push({
+                                ...imported.project,
+                                id: newProjId,
+                                name: imported.project.name + " (Импорт)"
+                            });
+
+                            imported.prompts.forEach(p => {
+                                prompts.push({
+                                    ...p,
+                                    id: 'prompt_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+                                    projectId: newProjId,
+                                    status: p.status || 'не отправлено'
+                                });
+                            });
+
+                            saveAndRefreshAll("Проект успешно импортирован как дубликат!");
+                        }
+                    } 
+                    // 3. Один промпт
+                    else if (imported.type === "single_prompt" && imported.prompt) {
+                        if (confirm(`Импортировать промпт "${imported.prompt.name}" в текущий проект?`)) {
+                            prompts.push({
+                                ...imported.prompt,
+                                id: 'prompt_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+                                projectId: currentProjectId || "no_project_id",
+                                name: imported.prompt.name + " (Импорт)",
+                                status: imported.prompt.status || 'не отправлено'
+                            });
+
+                            saveAndRefreshAll("Промпт успешно импортирован как дубликат!");
+                        }
+                    } else {
+                        alert("Неизвестный или поврежденный формат файла бэкапа.");
+                    }
+                } catch (err) {
+                    alert("Ошибка при парсинге JSON файла.");
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        function saveAndRefreshAll(successMsg) {
+            localStorage.setItem('hub_projects', JSON.stringify(projects));
+            localStorage.setItem('hub_prompts', JSON.stringify(prompts));
+            updateProjectSelect();
+            render();
+            showToast(successMsg);
         }
     </script>
 </body>
